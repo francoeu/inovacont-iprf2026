@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model Lead {
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now()) @map("created_at")
+  email           String?
+  whatsapp        String?
+  rendimentos     Decimal? @db.Decimal
+  patrimonio      Decimal? @db.Decimal
+  vinculos        String?
+  situacoes       String?
+  origem          String?
+
+  @@map("leads_irpf")
+}
