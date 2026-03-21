@@ -71,7 +71,7 @@ nav { background: rgba(26,20,96,0.95); backdrop-filter: blur(12px); padding: 0 4
   letter-spacing: .1em; 
   text-transform: uppercase;
 }
-.nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
+.nav-links { list-style: none; align-items: center; }
 .nav-links a { color: rgba(255,255,255,.75); text-decoration: none; font-size: 13px; font-weight: 600; transition: all .2s; letter-spacing: -0.01em; }
 .nav-links a:hover { color: white; }
 .nav-cta { background: var(--violet) !important; color: white !important; padding: 10px 22px; border-radius: 12px; font-weight: 800 !important; box-shadow: 0 4px 15px rgba(107,85,224,0.3); }

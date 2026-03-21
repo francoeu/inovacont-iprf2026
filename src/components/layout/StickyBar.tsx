@@ -48,34 +48,39 @@ export default function StickyBar() {
   if (isClosed) return null;
 
   return (
-    <div id="sticky-bar" className={isVisible ? "visible" : ""}>
-      <div className="flex items-center gap-6">
-        <div className="sticky-logo hidden md:flex items-center justify-center p-1 bg-black rounded-full w-10 h-10 overflow-hidden">
+    <div id="sticky-bar" className={`flex flex-col md:flex-row items-center justify-between gap-3 md:gap-16 px-4 md:px-8 py-3 md:py-3.5 ${isVisible ? "visible" : ""}`}>
+      <div className="flex items-center gap-4 md:gap-6 w-full md:w-auto overflow-hidden">
+        {/* Logo - Hidden on very small screens to save space */}
+        <div className="sticky-logo hidden sm:flex items-center justify-center p-1 bg-black rounded-full w-9 h-9 overflow-hidden flex-shrink-0">
           <img src="/inovacont-logo.png" alt="Inovacont" className="h-full w-auto object-contain" />
         </div>
-        <div className="sticky-countdown hidden md:flex items-center gap-2">
-          <div className="flex flex-col items-center">
-            <span className="sticky-cd-num">{timeLeft.days}</span>
-            <span className="text-[9px] uppercase font-bold text-white/40">Dias</span>
+
+        {/* Countdown - Now shown on mobile in a simplified way */}
+        <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex-shrink-0">
+          <div className="flex items-center gap-1">
+            <span className="text-gold-lt font-mono font-bold text-base leading-none">{timeLeft.days}</span>
+            <span className="text-[10px] uppercase font-bold text-white/30">d</span>
           </div>
-          <div className="text-white/20 font-bold mb-4">:</div>
-          <div className="flex flex-col items-center">
-            <span className="sticky-cd-num">{timeLeft.hrs}</span>
-            <span className="text-[9px] uppercase font-bold text-white/40">Hrs</span>
+          <div className="text-white/20 font-bold">:</div>
+          <div className="flex items-center gap-1">
+            <span className="text-gold-lt font-mono font-bold text-base leading-none">{timeLeft.hrs}</span>
+            <span className="text-[10px] uppercase font-bold text-white/30">h</span>
           </div>
-          <div className="text-white/20 font-bold mb-4">:</div>
-          <div className="flex flex-col items-center">
-            <span className="sticky-cd-num">{timeLeft.min}</span>
-            <span className="text-[9px] uppercase font-bold text-white/40">Min</span>
+          <div className="text-white/20 font-bold">:</div>
+          <div className="flex items-center gap-1">
+            <span className="text-gold-lt font-mono font-bold text-base leading-none">{timeLeft.min}</span>
+            <span className="text-[10px] uppercase font-bold text-white/30">m</span>
           </div>
         </div>
-        <div className="sticky-text text-white text-sm">
-          <strong className="block md:inline">O prazo encerra em breve!</strong>{" "}
+
+        <div className="sticky-text text-white text-xs md:text-sm truncate">
+          <strong className="inline">Prazo Aberto!</strong>{" "}
           <span className="hidden lg:inline text-white/60">
-            Evite multas e garanta sua restituição antecipada.
+            Garanta sua restituição e evite multas.
           </span>
         </div>
       </div>
+
       
       <div className="flex items-center gap-3">
         <Link href="#simula" className="btn-primary py-2 px-4 text-xs">
