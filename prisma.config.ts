@@ -1,5 +1,6 @@
 import { config } from "dotenv";
-config({ path: ".env.local" });
+// Load .env.local in development; on Vercel the vars are injected automatically
+config({ path: ".env.local", override: false });
 import { defineConfig, env } from "prisma/config";
 
 export default defineConfig({
@@ -8,6 +9,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: env("DIRECT_URL"),
+    url: env("DATABASE_URL"),
   },
 });
