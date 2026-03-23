@@ -255,41 +255,7 @@ export default function Simulator() {
                         </div>
                       </div>
 
-                      <div>
-                        <label className="block text-[13px] font-bold text-deep mb-3">Recebeu 13º salário em 2025?</label>
-                        <div className="space-y-2">
-                          <RadioOption 
-                            label="Sim — recebi o 13º completo"
-                            sub="Tributação exclusiva na fonte (Art. 700 RIR/2018). Não altera o IR do ajuste anual."
-                            active={formData.recebeu13 === "completo"}
-                            onClick={() => setFormData({...formData, recebeu13: "completo"})}
-                          />
-                          <RadioOption 
-                            label="Sim — proporcional (demissão ou admissão no ano)"
-                            sub="Tributação exclusiva na fonte. Informe o valor para fins de declaração."
-                            active={formData.recebeu13 === "proporcional"}
-                            onClick={() => setFormData({...formData, recebeu13: "proporcional"})}
-                          />
-                          {formData.recebeu13 === "proporcional" && (
-                            <div className="pl-9 animate-fade-in">
-                              <label className="block text-[11px] font-bold text-deep mb-2">Valor bruto do 13º recebido</label>
-                              <div className="relative max-w-md">
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold text-xs">R$</span>
-                                <MoneyInput
-                                  value={formData.valor13}
-                                  onChange={(val) => setFormData({...formData, valor13: val})}
-                                  placeholder="0,00"
-                                />
-                              </div>
-                            </div>
-                          )}
-                          <RadioOption 
-                            label="Não recebi 13º em 2025"
-                            active={formData.recebeu13 === "nao"}
-                            onClick={() => setFormData({...formData, recebeu13: "nao"})}
-                          />
-                        </div>
-                      </div>
+
 
                       {formData.salarioMensal > 0 && <CLTMonthlyEstimate salario={formData.salarioMensal} />}
                     </div>
