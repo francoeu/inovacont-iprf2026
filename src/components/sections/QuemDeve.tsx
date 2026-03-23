@@ -75,17 +75,17 @@ export default function QuemDeve() {
           icon="💰"
           variant="default"
           title="Rendimentos Tributáveis"
-          description="Recebeu rendimentos tributáveis cuja soma foi superior a <strong>R$ 35.584,00</strong> em 2025 (~R$ 2.965,33/mês). Inclui salários, aluguéis, pró-labore, aposentadorias acima do limite."
+          description="Recebeu rendimentos tributáveis cuja soma foi superior a <strong>R$ 35.584,00</strong> em 2025 (R$ 2.965,33 por mês). Inclui salários, aluguéis, pró-labore, aposentadorias acima do limite."
           examples={[
-            { type: "inclui", text: "Salário CLT de R$ 3.500/mês — ultrapassa o limite anual" },
-            { type: "inclui", text: "Pró-labore de sócio de R$ 4.000/mês" },
+            { type: "inclui", text: "Salário CLT de R$ 3.500,00 por mês — ultrapassa o limite anual" },
+            { type: "inclui", text: "Pró-labore de sócio de R$ 4.000,00 por mês" },
             { type: "inclui", text: "Aluguel de imóvel recebido diretamente no CPF" },
             { type: "inclui", text: "Honorários de autônomo sem nota PJ" },
-            { type: "inclui", text: "Aposentadoria INSS acima de R$ 2.824/mês (para 65+)" },
+            { type: "inclui", text: "Aposentadoria INSS acima de R$ 2.824,00 por mês (para 65+)" },
             { type: "nao-inclui", text: "Distribuição de lucros de PJ (isenta)" },
             { type: "nao-inclui", text: "FGTS e PLR (tributados na fonte separadamente)" }
           ]}
-          tip="Médico com pró-labore de R$ 3.000/mês = R$ 36.000/ano → <strong>obrigado a declarar</strong>"
+          tip="Médico com pró-labore de R$ 3.000,00 por mês = R$ 36.000,00 por ano → <strong>obrigado a declarar</strong>"
         />
 
         <InfoCard
@@ -94,14 +94,14 @@ export default function QuemDeve() {
           title="Rendimentos Isentos"
           description="Recebeu rendimentos isentos, não tributáveis ou tributados na fonte cuja soma foi superior a <strong>R$ 200.000,00</strong> em 2025. Ex.: PLR, FGTS, dividendos, poupança, indenizações."
           examples={[
-            { type: "inclui", text: "Distribuição de lucros de PJ: R$ 20.000/mês = R$ 240.000/ano → declarar" },
+            { type: "inclui", text: "Distribuição de lucros de PJ: R$ 20.000,00 por mês = R$ 240.000,00 por ano → declarar" },
             { type: "inclui", text: "FGTS sacado + PLR recebido no ano" },
             { type: "inclui", text: "Rendimentos de poupança e LCI/LCA" },
             { type: "inclui", text: "Indenização trabalhista ou rescisão" },
             { type: "inclui", text: "Dividendos de ações (isentos para PF)" },
             { type: "inclui", text: "Pensão alimentícia recebida (isenta para dependente)" }
           ]}
-          tip="Médico PJ que distribui R$ 17.000/mês em lucros = R$ 204.000/ano → <strong>obrigado a declarar</strong>"
+          tip="Médico PJ que distribui R$ 17.000,00 por mês em lucros = R$ 204.000,00 por ano → <strong>obrigado a declarar</strong>"
         />
 
         <InfoCard
@@ -110,13 +110,13 @@ export default function QuemDeve() {
           title="Patrimônio Elevado"
           description="Possuía bens ou direitos com valor total superior a <strong>R$ 800.000,00</strong> em 31/12/2025 — imóveis (custo de aquisição), veículos, investimentos, terra nua etc."
           examples={[
-            { type: "inclui", text: "Apartamento de R$ 650.000 + carro R$ 200.000 = R$ 850.000 → declarar" },
+            { type: "inclui", text: "Apartamento de R$ 650.000,00 + carro R$ 200.000,00 = R$ 850.000,00 → declarar" },
             { type: "inclui", text: "Investimentos em renda fixa e ações somados" },
             { type: "inclui", text: "Imóvel herdado registrado em seu nome" },
             { type: "inclui", text: "Participação societária (cotas de empresa)" },
             { type: "atencao", text: "Usa-se o custo de aquisição, não o valor de mercado" }
           ]}
-          tip="Imóvel comprado por R$ 500k em 2010 (mesmo valendo R$ 1M hoje) entra como R$ 500k na declaração"
+          tip="Imóvel comprado por R$ 500.000,00 em 2010 (mesmo valendo R$ 1.000.000,00 hoje) entra como R$ 500.000,00 na declaração"
         />
 
         <InfoCard
@@ -125,14 +125,14 @@ export default function QuemDeve() {
           title="Ganho de Capital / Bolsa"
           description="Obteve ganho de capital na alienação de bens; ou realizou operações em bolsa com soma superior a <strong>R$ 40.000,00</strong> ou com apuração de ganhos líquidos tributáveis."
           examples={[
-            { type: "inclui", text: "Vendeu R$ 50.000 em ações em 2025 (independente de lucro ou prejuízo)" },
+            { type: "inclui", text: "Vendeu R$ 50.000,00 em ações em 2025 (independente de lucro ou prejuízo)" },
             { type: "inclui", text: "Vendeu imóvel com lucro → ganho de capital sujeito a IR" },
             { type: "inclui", text: "Operações de day trade (sempre tributadas)" },
             { type: "inclui", text: "Vendeu veículo por valor acima do custo de aquisição" },
-            { type: "isento", text: "Venda de único imóvel residencial até R$ 440.000" },
-            { type: "isento", text: "Venda de ações até R$ 20.000/mês (swing trade)" }
+            { type: "isento", text: "Venda de único imóvel residencial até R$ 440.000,00" },
+            { type: "isento", text: "Venda de ações até R$ 20.000,00 por mês (swing trade)" }
           ]}
-          tip="Basta ter <em>realizado</em> R$ 40.001 em vendas na bolsa — mesmo sem lucro já é obrigado"
+          tip="Basta ter realizado R$ 40.000,01 em vendas na bolsa — mesmo sem lucro já é obrigado"
         />
 
         <InfoCard
@@ -147,7 +147,7 @@ export default function QuemDeve() {
             { type: "inclui", text: "Quem quer compensar prejuízo rural de anos anteriores" },
             { type: "nao-inclui", text: "Arrendamento simples de terra (vai para 'Rendimentos Tributáveis')" }
           ]}
-          tip="Limite é 50% do teto do IRPF (R$ 35.584 × 5 = R$ 177.920). Abaixo disso, ainda pode ser obrigado por outro critério"
+          tip="Limite é 50% do teto do IRPF (R$ 35.584,00 × 5 = R$ 177.920,00). Abaixo disso, ainda pode ser obrigado por outro critério"
         />
 
         <InfoCard

@@ -16,6 +16,8 @@ model Lead {
   vinculos        String?
   situacoes       String?
   isento          Decimal? @db.Decimal
+  imposto         Decimal? @db.Decimal
+  obrigado        Boolean?
   origem          String?
 
   @@map("leads_irpf")

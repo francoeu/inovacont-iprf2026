@@ -577,7 +577,15 @@ export default function Simulator() {
                     <input
                       type="number"
                       value={formData.dependentes}
-                      onChange={(e) => setFormData({...formData, dependentes: parseInt(e.target.value) || 0})}
+                       onChange={(e) => {
+                        const deps = parseInt(e.target.value) || 0;
+                        const eduLim = (deps + 1) * IRPF_RULES.EDUCATION_DEDUCTION_LIMIT_ANNUAL;
+                        setFormData({
+                          ...formData, 
+                          dependentes: deps,
+                          gastosEducacao: Math.min(formData.gastosEducacao, eduLim)
+                        });
+                      }}
                       className="w-32 bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 px-4 font-bold text-deep transition-all"
                     />
                   </div>
@@ -603,11 +611,18 @@ export default function Simulator() {
                       <input
                         type="number"
                         value={formData.gastosEducacao || ""}
-                        onChange={(e) => setFormData({...formData, gastosEducacao: parseFloat(e.target.value) || 0})}
+                        onChange={(e) => {
+                          const val = parseFloat(e.target.value) || 0;
+                          const limit = (formData.dependentes + 1) * IRPF_RULES.EDUCATION_DEDUCTION_LIMIT_ANNUAL;
+                          setFormData({...formData, gastosEducacao: Math.min(val, limit)});
+                        }}
                         className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
                         placeholder="0,00"
                       />
                     </div>
+                    <p className="mt-2 text-[11px] text-gray-400">
+                      Limite total permitido: <strong className="text-violet">{formatBRL((formData.dependentes + 1) * IRPF_RULES.EDUCATION_DEDUCTION_LIMIT_ANNUAL)}</strong> (considerando você + {formData.dependentes} dependentes).
+                    </p>
                   </div>
 
                   <div>
@@ -816,6 +831,7 @@ function VinculoOption({
 function Result({ data, reset }: { data: FormData; reset: () => void }) {
   const [isSent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showMemory, setShowMemory] = useState(false);
 
   // Use state for email and whatsapp to handle form changes
   const [email, setEmail] = useState(data.email);
@@ -955,12 +971,157 @@ function Result({ data, reset }: { data: FormData; reset: () => void }) {
               </ul>
             </div>
           )}
+
+          <div className="mt-8">
+            <button 
+              onClick={() => setShowMemory(!showMemory)}
+              className="w-full flex items-center justify-between p-4 bg-bg rounded-2xl text-deep font-bold hover:bg-violet/5 transition-all border border-transparent hover:border-violet/20"
+            >
+              <span>📊 Ver Memória de Cálculo Detalhada</span>
+              <span className={`transition-transform ${showMemory ? "rotate-180" : ""}`}>↓</span>
+            </button>
+
+            {showMemory && (
+              <div className="mt-4 p-6 bg-white border border-gray-100 rounded-2xl shadow-sm animate-fade-in space-y-6">
+                {/* Receitas Tributáveis */}
+                <div>
+                  <h5 className="text-[11px] font-bold text-violet uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-violet rounded-full"></span>
+                    Origem das Receitas Tributáveis (Ano-Base 2025)
+                  </h5>
+                  <div className="space-y-2 text-sm">
+                    {res.breakdownIncomes.clt > 0 && (
+                      <div className="flex justify-between py-1 border-b border-gray-50">
+                        <span className="text-sub">Rendimentos CLT (Salários)</span>
+                        <span className="font-medium text-deep">{formatBRL(res.breakdownIncomes.clt)}</span>
+                      </div>
+                    )}
+                    {res.breakdownIncomes.liberal > 0 && (
+                      <div className="flex justify-between py-1 border-b border-gray-50">
+                        <span className="text-sub">Rendimentos Autônomo / Liberal</span>
+                        <span className="font-medium text-deep">{formatBRL(res.breakdownIncomes.liberal)}</span>
+                      </div>
+                    )}
+                    {res.breakdownIncomes.proLabore > 0 && (
+                      <div className="flex justify-between py-1 border-b border-gray-50">
+                        <span className="text-sub">Pró-Labore (Sócio/PJ)</span>
+                        <span className="font-medium text-deep">{formatBRL(res.breakdownIncomes.proLabore)}</span>
+                      </div>
+                    )}
+                    {res.breakdownIncomes.aposentadoria > 0 && (
+                      <div className="flex justify-between py-1 border-b border-gray-50">
+                        <span className="text-sub">Aposentadoria (Parcela Tributável)</span>
+                        <span className="font-medium text-deep">{formatBRL(res.breakdownIncomes.aposentadoria)}</span>
+                      </div>
+                    )}
+                    {res.breakdownIncomes.mei > 0 && (
+                      <div className="flex justify-between py-1 border-b border-gray-50">
+                        <span className="text-sub">MEI (Parcela Tributável)</span>
+                        <span className="font-medium text-deep">{formatBRL(res.breakdownIncomes.mei)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between py-2 text-deep font-bold bg-bg px-2 rounded mt-1">
+                      <span>Base de Cálculo Bruta</span>
+                      <span>{formatBRL(res.totalTributavel)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Rendimentos Isentos */}
+                <div>
+                  <h5 className="text-[11px] font-bold text-green-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                    Rendimentos Isentos ou Não Tributáveis
+                  </h5>
+                  <div className="space-y-2 text-sm">
+                    {res.breakdownIsentos.lucros > 0 && (
+                      <div className="flex justify-between py-1 border-b border-gray-50">
+                        <span className="text-sub">Distribuição de Lucros (PJ)</span>
+                        <span className="font-medium text-deep">{formatBRL(res.breakdownIsentos.lucros)}</span>
+                      </div>
+                    )}
+                    {res.breakdownIsentos.mei > 0 && (
+                      <div className="flex justify-between py-1 border-b border-gray-50">
+                        <span className="text-sub">Lucro Isento Presumido (MEI)</span>
+                        <span className="font-medium text-deep">{formatBRL(res.breakdownIsentos.mei)}</span>
+                      </div>
+                    )}
+                    {res.breakdownIsentos.aposentadoria > 0 && (
+                      <div className="flex justify-between py-1 border-b border-gray-50">
+                        <span className="text-sub">Isenção Extra (Aposentado 65+)</span>
+                        <span className="font-medium text-deep">{formatBRL(res.breakdownIsentos.aposentadoria)}</span>
+                      </div>
+                    )}
+                    {res.breakdownIsentos.outros > 0 && (
+                      <div className="flex justify-between py-1 border-b border-gray-50">
+                        <span className="text-sub">Outros Rendimentos Isentos</span>
+                        <span className="font-medium text-deep">{formatBRL(res.breakdownIsentos.outros)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between py-2 text-green-700 font-bold bg-green-50 px-2 rounded mt-1">
+                      <span>Total Desconsiderado de IR</span>
+                      <span>{formatBRL(res.totalIsento)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Deduções e Modelos */}
+                <div className="space-y-6 pt-4 border-t border-gray-100">
+                  <div className="p-4 bg-bg rounded-xl">
+                    <h6 className="text-[10px] font-bold text-deep uppercase mb-3 underline">Modelo Simplificado</h6>
+                    <div className="space-y-1 text-[12px]">
+                      <div className="flex justify-between mb-2">
+                        <span>Desconto Padrão (20%):</span>
+                        <span className="font-bold text-red-600">-{formatBRL(res.simplificado.desconto)}</span>
+                      </div>
+                      <div className="text-[10px] text-gray-400 mb-2">
+                        * Limitado ao teto anual de {formatBRL(IRPF_RULES.SIMPLIFIED_DISCOUNT_MAX)}
+                      </div>
+                      <div className="flex justify-between font-bold border-t border-gray-200 pt-2">
+                        <span>Base Líquida:</span>
+                        <span>{formatBRL(res.simplificado.base)}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-bg rounded-xl">
+                    <h6 className="text-[10px] font-bold text-deep uppercase mb-3 underline">Modelo Completo (Legal)</h6>
+                    <div className="space-y-1 text-[12px]">
+                      <div className="flex justify-between">
+                        <span>Previdência (INSS):</span>
+                        <span className="font-bold text-red-600">-{formatBRL(res.breakdownDeducoes.inss)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Dependentes:</span>
+                        <span className="font-bold text-red-600">-{formatBRL(res.breakdownDeducoes.dependentes)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Saúde:</span>
+                        <span className="font-bold text-red-600">-{formatBRL(res.breakdownDeducoes.saude)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Educação*:</span>
+                        <span className="font-bold text-red-600">-{formatBRL(res.breakdownDeducoes.educacao)}</span>
+                      </div>
+                      <div className="text-[10px] text-gray-400 mt-1">
+                        * Respeitando o limite de {formatBRL(IRPF_RULES.EDUCATION_DEDUCTION_LIMIT_ANNUAL)} por dependente.
+                      </div>
+                      <div className="flex justify-between font-bold border-t border-gray-200 pt-2">
+                        <span>Base Líquida:</span>
+                        <span>{formatBRL(res.completo.base)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="bg-violet/5 p-8 rounded-3xl border border-violet/10">
+        <div className="bg-violet/5 p-8 rounded-3xl border border-violet/10 h-fit sticky top-6">
           <h4 className="text-xl font-bold text-deep mb-4">Receba seu planejamento detalhado</h4>
           <p className="text-sm text-sub mb-8 leading-relaxed">
-            Deixe seus contatos e um especialista entrará em contato para validar sua simulação.
+            Deixe seus contatos e um especialista entrará em contato para validar sua simulação e garantir o menor imposto.
           </p>
 
           <form className="space-y-4" onSubmit={handleLead}>

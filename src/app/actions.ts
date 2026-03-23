@@ -23,6 +23,8 @@ export async function saveLead(data: LeadData) {
       vinculos: data.vinculos,
       situacoes: data.situacoes,
       isento: data.isento,
+      imposto: data.imposto,
+      obrigado: data.obrigado,
       origem: "simulador_v3_steps",
     },
   });

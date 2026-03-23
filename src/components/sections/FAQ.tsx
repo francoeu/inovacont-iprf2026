@@ -81,7 +81,7 @@ export default function FAQ() {
     },
     {
       question: "Como funciona o cálculo do INSS para quem é CLT?",
-      answer: "A contribuição INSS do empregado CLT é calculada pela tabela progressiva 2025: 7,5% (até R$ 1.518,00), 9% (R$ 1.518,01–R$ 2.793,88), 12% (R$ 2.793,89–R$ 4.190,83) e 14% (R$ 4.190,84–R$ 8.157,41). O valor é deduzido integralmente da base de cálculo do IR. Exemplo: salário bruto de R$ 5.000 → INSS ~R$ 490 → base IR = R$ 4.510 → IR = R$ 4.510 × 15% − R$ 492,78 = R$ 183,72/mês."
+      answer: "A contribuição INSS do empregado CLT é calculada pela tabela progressiva 2025: 7,5% (até R$ 1.518,00), 9% (R$ 1.518,01–R$ 2.793,88), 12% (R$ 2.793,89–R$ 4.190,83) e 14% (R$ 4.190,84–R$ 8.157,41). O valor é deduzido integralmente da base de cálculo do IR. Exemplo: salário bruto de R$ 5.000,00 → INSS R$ 509,59 → base IR = R$ 4.490,41 → IR = R$ 4.490,41 × 22,5% − R$ 662,77 = R$ 347,57/mês."
     },
     {
       question: "Como declarar sendo PJ? O IRRF é abatido?",

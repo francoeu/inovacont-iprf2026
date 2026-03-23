@@ -101,14 +101,35 @@ export function calculateAnnual2026(params: {
     totalTributavel,
     totalIsento,
     rendimento13,
+    breakdownIncomes: {
+      clt: rendimentoCLT,
+      liberal: params.liberal,
+      proLabore: params.proLaborePJ,
+      aposentadoria: rendimentoApoTributavel,
+      mei: rendimentoMEITributavel,
+    },
+    breakdownIsentos: {
+      lucros: params.lucrosPJ,
+      mei: lucroIsentoMEI,
+      aposentadoria: isencaoExtraApo,
+      outros: params.outrosIsentos || 0,
+    },
+    breakdownDeducoes: {
+      inss: totalINSS,
+      dependentes: dedDepend,
+      saude: dedSaude,
+      educacao: dedEduc,
+    },
     simplificado: {
       imposto: impSimp,
       base: baseSimp,
+      desconto: descSimp,
       aliquotaEfetiva: totalTributavel > 0 ? (impSimp / totalTributavel) * 100 : 0,
     },
     completo: {
       imposto: impComp,
       base: baseComp,
+      totalDeducoes,
       aliquotaEfetiva: totalTributavel > 0 ? (impComp / totalTributavel) * 100 : 0,
     }
   };
@@ -118,14 +139,35 @@ export interface CalculationResult {
   totalTributavel: number;
   totalIsento: number;
   rendimento13: number;
+  breakdownIncomes: {
+    clt: number;
+    liberal: number;
+    proLabore: number;
+    aposentadoria: number;
+    mei: number;
+  };
+  breakdownIsentos: {
+    lucros: number;
+    mei: number;
+    aposentadoria: number;
+    outros: number;
+  };
+  breakdownDeducoes: {
+    inss: number;
+    dependentes: number;
+    saude: number;
+    educacao: number;
+  };
   simplificado: {
     imposto: number;
     base: number;
+    desconto: number;
     aliquotaEfetiva: number;
   };
   completo: {
     imposto: number;
     base: number;
+    totalDeducoes: number;
     aliquotaEfetiva: number;
   };
 }

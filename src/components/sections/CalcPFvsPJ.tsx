@@ -114,7 +114,7 @@ export default function CalcPFvsPJ() {
                 <div className="calc-card-t-net">
                   <div className="net-label">Líquido Final</div>
                   <div className="net-val">{formatBRL(pf.liquido)}</div>
-                  <div className="net-pct">Carga: {((pf.total / income) * 100).toFixed(1)}%</div>
+                  <div className="net-pct">Carga: {((pf.total / income) * 100).toFixed(2)}%</div>
                 </div>
               </div>
 
@@ -142,11 +142,11 @@ export default function CalcPFvsPJ() {
                 <div className="calc-card-t-net">
                   <div className="net-label">Líquido Final</div>
                   <div className="net-val">{formatBRL(pj.liquido)}</div>
-                  <div className="net-pct">Carga: {((pj.total / income) * 100).toFixed(1)}%</div>
+                  <div className="net-pct">Carga: {((pj.total / income) * 100).toFixed(2)}%</div>
                 </div>
                 {economy > 0 && (
                   <div className="calc-card-t-note">
-                    Economia de <strong>{formatBRL(economy)}</strong>/mês
+                    Economia de <strong>{formatBRL(economy)}</strong> por mês
                   </div>
                 )}
               </div>
@@ -164,7 +164,7 @@ export default function CalcPFvsPJ() {
                 <div className="calc-card-t-net">
                   <div className="net-label">Líquido Final</div>
                   <div className="net-val">{formatBRL(hib.liquido)}</div>
-                  <div className="net-pct">Carga: {((hib.total / income) * 100).toFixed(1)}%</div>
+                  <div className="net-pct">Carga: {((hib.total / income) * 100).toFixed(2)}%</div>
                 </div>
               </div>
             </div>
