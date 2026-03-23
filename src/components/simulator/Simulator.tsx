@@ -234,12 +234,9 @@ export default function Simulator() {
                         <label className="block text-[13px] font-bold text-deep mb-3">Qual era o seu salário bruto mensal em 2025?</label>
                         <div className="relative max-w-md">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                          <input
-                            type="number"
-                            value={formData.salarioMensal || ""}
-                            onChange={(e) => setFormData({...formData, salarioMensal: parseFloat(e.target.value) || 0})}
-                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                            placeholder="0,00"
+                          <MoneyInput
+                            value={formData.salarioMensal}
+                            onChange={(val) => setFormData({...formData, salarioMensal: val})}
                           />
                         </div>
                       </div>
@@ -252,7 +249,7 @@ export default function Simulator() {
                             min="1"
                             max="12"
                             value={formData.mesesTrabalhados}
-                            onChange={(e) => setFormData({...formData, mesesTrabalhados: parseInt(e.target.value) || 0})}
+                            onChange={(e) => setFormData({...formData, mesesTrabalhados: Math.min(12, Math.max(1, parseInt(e.target.value) || 0))})}
                             className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 px-4 font-bold text-deep transition-all"
                           />
                         </div>
@@ -278,11 +275,9 @@ export default function Simulator() {
                               <label className="block text-[11px] font-bold text-deep mb-2">Valor bruto do 13º recebido</label>
                               <div className="relative max-w-md">
                                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold text-xs">R$</span>
-                                <input
-                                  type="number"
-                                  value={formData.valor13 || ""}
-                                  onChange={(e) => setFormData({...formData, valor13: parseFloat(e.target.value) || 0})}
-                                  className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-2 pl-10 pr-4 font-bold text-deep text-sm transition-all"
+                                <MoneyInput
+                                  value={formData.valor13}
+                                  onChange={(val) => setFormData({...formData, valor13: val})}
                                   placeholder="0,00"
                                 />
                               </div>
@@ -310,18 +305,15 @@ export default function Simulator() {
                     </div>
                     
                     <div>
-                      <label className="block text-[13px] font-bold text-deep mb-3">Total recebido em 2025 (Honorários/Autônomo)</label>
+                      <label className="block text-[13px] font-bold text-deep mb-3">Valor médio mensal recebido em 2025 (Honorários/Autônomo)</label>
                       <div className="relative max-w-md">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                        <input
-                          type="number"
-                          value={formData.rendimentoLiberal || ""}
-                          onChange={(e) => setFormData({...formData, rendimentoLiberal: parseFloat(e.target.value) || 0})}
-                          className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                          placeholder="0,00"
+                        <MoneyInput
+                          value={formData.rendimentoLiberal}
+                          onChange={(val) => setFormData({...formData, rendimentoLiberal: val})}
                         />
                       </div>
-                      <p className="mt-3 text-[11px] text-gray-400">Some todos os honorários arrecadados no CPF. O INSS será calculado sobre esses valores.</p>
+                      <p className="mt-3 text-[11px] text-gray-400">Informe a média recebida por mês. O sistema multiplicará por 12 meses automaticamente para o cálculo anual.</p>
                     </div>
                   </div>
                 )}
@@ -339,12 +331,9 @@ export default function Simulator() {
                         <label className="block text-[13px] font-bold text-deep mb-3">Valor total do Pró-labore recebido em 2025</label>
                         <div className="relative max-w-md">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                          <input
-                            type="number"
-                            value={formData.proLaborePJ || ""}
-                            onChange={(e) => setFormData({...formData, proLaborePJ: parseFloat(e.target.value) || 0})}
-                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                            placeholder="0,00"
+                          <MoneyInput
+                            value={formData.proLaborePJ}
+                            onChange={(val) => setFormData({...formData, proLaborePJ: val})}
                           />
                         </div>
                       </div>
@@ -353,12 +342,9 @@ export default function Simulator() {
                         <label className="block text-[13px] font-bold text-deep mb-3">Qual foi o total de distribuição de lucros recebido em 2025?</label>
                         <div className="relative max-w-md">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                          <input
-                            type="number"
-                            value={formData.lucrosPJ || ""}
-                            onChange={(e) => setFormData({...formData, lucrosPJ: parseFloat(e.target.value) || 0})}
-                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                            placeholder="0,00"
+                          <MoneyInput
+                            value={formData.lucrosPJ}
+                            onChange={(val) => setFormData({...formData, lucrosPJ: val})}
                           />
                         </div>
                       </div>
@@ -367,12 +353,9 @@ export default function Simulator() {
                         <label className="block text-[13px] font-bold text-deep mb-3">Qual foi o total de IR retido na fonte ao longo de 2025?</label>
                         <div className="relative max-w-md">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                          <input
-                            type="number"
-                            value={formData.irRetidoPJ || ""}
-                            onChange={(e) => setFormData({...formData, irRetidoPJ: parseFloat(e.target.value) || 0})}
-                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                            placeholder="0,00"
+                          <MoneyInput
+                            value={formData.irRetidoPJ}
+                            onChange={(val) => setFormData({...formData, irRetidoPJ: val})}
                           />
                         </div>
                       </div>
@@ -417,12 +400,10 @@ export default function Simulator() {
                         <label className="block text-[13px] font-bold text-deep mb-3">Quanto faturou pelo seu MEI em 2025 (total do ano)?</label>
                         <div className="relative max-w-md">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                          <input
-                            type="number"
-                            value={formData.rendimentoMEI || ""}
-                            onChange={(e) => setFormData({...formData, rendimentoMEI: parseFloat(e.target.value) || 0})}
-                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                            placeholder="0,00"
+                          <MoneyInput
+                            value={formData.rendimentoMEI}
+                            onChange={(val) => setFormData({...formData, rendimentoMEI: val})}
+                            limit={IRPF_RULES.MEI_ANNUAL_LIMIT}
                           />
                         </div>
                         <p className="mt-3 text-[11px] text-gray-400">Limite do MEI em 2025: R$ 81.000/ano.</p>
@@ -444,12 +425,9 @@ export default function Simulator() {
                         <label className="block text-[13px] font-bold text-deep mb-3">Qual é o valor bruto do seu benefício anual em 2025?</label>
                         <div className="relative max-w-md">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                          <input
-                            type="number"
-                            value={formData.rendimentoAposentado || ""}
-                            onChange={(e) => setFormData({...formData, rendimentoAposentado: parseFloat(e.target.value) || 0})}
-                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                            placeholder="0,00"
+                          <MoneyInput
+                            value={formData.rendimentoAposentado}
+                            onChange={(val) => setFormData({...formData, rendimentoAposentado: val})}
                           />
                         </div>
                       </div>
@@ -493,12 +471,9 @@ export default function Simulator() {
                     <label className="block text-[13px] font-bold text-deep mb-3">Qual era o valor total dos seus bens e direitos em 31/12/2025?</label>
                     <div className="relative max-w-md">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                      <input
-                        type="number"
-                        value={formData.patrimonio || ""}
-                        onChange={(e) => setFormData({...formData, patrimonio: parseFloat(e.target.value) || 0})}
-                        className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                        placeholder="0,00"
+                      <MoneyInput
+                        value={formData.patrimonio}
+                        onChange={(val) => setFormData({...formData, patrimonio: val})}
                       />
                     </div>
                     <p className="mt-2 text-[11px] text-gray-400">Some imóveis (pelo custo de aquisição), veículos, investimentos, saldos e participações societárias.</p>
@@ -508,12 +483,9 @@ export default function Simulator() {
                     <label className="block text-[13px] font-bold text-deep mb-3">Recebeu rendimentos isentos ou tributados na fonte em 2025?</label>
                     <div className="relative max-w-md">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                      <input
-                        type="number"
-                        value={formData.rendimentoOutros || ""}
-                        onChange={(e) => setFormData({...formData, rendimentoOutros: parseFloat(e.target.value) || 0})}
-                        className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                        placeholder="0,00"
+                      <MoneyInput
+                        value={formData.rendimentoOutros}
+                        onChange={(val) => setFormData({...formData, rendimentoOutros: val})}
                       />
                     </div>
                     <p className="mt-2 text-[11px] text-gray-400 italic">Ex.: PLR, FGTS sacado, poupança, LCI/LCA, dividendos, heranças, indenizações, observação: O 13º salário já é informado no bloco CLT.</p>
@@ -577,29 +549,29 @@ export default function Simulator() {
                     <input
                       type="number"
                       value={formData.dependentes}
-                       onChange={(e) => {
-                        const deps = parseInt(e.target.value) || 0;
-                        const eduLim = (deps + 1) * IRPF_RULES.EDUCATION_DEDUCTION_LIMIT_ANNUAL;
+                      onChange={(e) => {
+                        const deps = Math.min(20, Math.max(0, parseInt(e.target.value) || 0));
                         setFormData({
                           ...formData, 
-                          dependentes: deps,
-                          gastosEducacao: Math.min(formData.gastosEducacao, eduLim)
+                          dependentes: deps
                         });
                       }}
                       className="w-32 bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 px-4 font-bold text-deep transition-all"
                     />
+                    {formData.dependentes > 0 && (
+                      <p className="mt-2 text-[11px] text-gray-500">
+                        Dedução legal: <strong className="text-violet">{formatBRL(IRPF_RULES.DEPENDENT_DEDUCTION_ANNUAL)}</strong> por dependente (Total: <strong className="text-violet">{formatBRL(formData.dependentes * IRPF_RULES.DEPENDENT_DEDUCTION_ANNUAL)}</strong>/ano)
+                      </p>
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-[13px] font-bold text-deep mb-3">Quanto gastou com saúde em 2025? (médicos, plano de saúde, exames — sem limite de dedução)</label>
                     <div className="relative max-w-md">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                      <input
-                        type="number"
-                        value={formData.gastosSaude || ""}
-                        onChange={(e) => setFormData({...formData, gastosSaude: parseFloat(e.target.value) || 0})}
-                        className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                        placeholder="0,00"
+                      <MoneyInput
+                        value={formData.gastosSaude}
+                        onChange={(val) => setFormData({...formData, gastosSaude: val})}
                       />
                     </div>
                   </div>
@@ -608,21 +580,12 @@ export default function Simulator() {
                     <label className="block text-[13px] font-bold text-deep mb-3">Quanto gastou com educação em 2025? (limite de R$ 3.561,50 por pessoa)</label>
                     <div className="relative max-w-md">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                      <input
-                        type="number"
-                        value={formData.gastosEducacao || ""}
-                        onChange={(e) => {
-                          const val = parseFloat(e.target.value) || 0;
-                          const limit = (formData.dependentes + 1) * IRPF_RULES.EDUCATION_DEDUCTION_LIMIT_ANNUAL;
-                          setFormData({...formData, gastosEducacao: Math.min(val, limit)});
-                        }}
-                        className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                        placeholder="0,00"
+                      <MoneyInput
+                        value={formData.gastosEducacao}
+                        onChange={(val) => setFormData({...formData, gastosEducacao: val})}
+                        limit={IRPF_RULES.EDUCATION_DEDUCTION_LIMIT_ANNUAL}
                       />
                     </div>
-                    <p className="mt-2 text-[11px] text-gray-400">
-                      Limite total permitido: <strong className="text-violet">{formatBRL((formData.dependentes + 1) * IRPF_RULES.EDUCATION_DEDUCTION_LIMIT_ANNUAL)}</strong> (considerando você + {formData.dependentes} dependentes).
-                    </p>
                   </div>
 
                   <div>
@@ -842,7 +805,7 @@ function Result({ data, reset }: { data: FormData; reset: () => void }) {
     meses: data.mesesTrabalhados,
     recebeu13: data.recebeu13,
     valor13: data.valor13,
-    liberal: data.rendimentoLiberal,
+    liberal: data.rendimentoLiberal * 12,
     proLaborePJ: data.proLaborePJ,
     lucrosPJ: data.lucrosPJ,
     irRetidoPJ: data.irRetidoPJ,
@@ -850,7 +813,7 @@ function Result({ data, reset }: { data: FormData; reset: () => void }) {
     meiAtiv: data.meiAtiv,
     aposentadoria: data.rendimentoAposentado,
     idade65: data.idade65,
-    outrosIsentos: data.rendimentoOutros,
+    outrosIsentos: Math.max(0, data.rendimentoOutros - (data.vinculos.includes("mei") ? (data.rendimentoMEI * (data.meiAtiv === "serv" ? 0.32 : data.meiAtiv === "com" ? 0.08 : 0.20)) : 0)),
     dependentes: data.dependentes,
     saude: data.gastosSaude,
     educacao: data.gastosEducacao,
@@ -1081,6 +1044,11 @@ function Result({ data, reset }: { data: FormData; reset: () => void }) {
                         <span>Base Líquida:</span>
                         <span>{formatBRL(res.simplificado.base)}</span>
                       </div>
+                      {res.simplificado.base < IRPF_RULES.ANNUAL_EXEMPTION_LIMIT && res.totalTributavel >= IRPF_RULES.ANNUAL_EXEMPTION_LIMIT && (
+                        <div className="mt-3 p-3 bg-blue-50/50 border border-blue-100 rounded-lg text-[11px] text-blue-800 leading-relaxed font-medium">
+                          <strong>Aviso:</strong> Após aplicação dos 20% de descontos simplificados sobre os rendimentos tributados, a base líquida resultou em um valor menor que {formatBRL(IRPF_RULES.ANNUAL_EXEMPTION_LIMIT)}.
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -1104,12 +1072,17 @@ function Result({ data, reset }: { data: FormData; reset: () => void }) {
                         <span className="font-bold text-red-600">-{formatBRL(res.breakdownDeducoes.educacao)}</span>
                       </div>
                       <div className="text-[10px] text-gray-400 mt-1">
-                        * Respeitando o limite de {formatBRL(IRPF_RULES.EDUCATION_DEDUCTION_LIMIT_ANNUAL)} por dependente.
+                        * Respeitando o limite máximo dedutível de {formatBRL(IRPF_RULES.EDUCATION_DEDUCTION_LIMIT_ANNUAL)}.
                       </div>
                       <div className="flex justify-between font-bold border-t border-gray-200 pt-2">
                         <span>Base Líquida:</span>
                         <span>{formatBRL(res.completo.base)}</span>
                       </div>
+                      {res.completo.base < IRPF_RULES.ANNUAL_EXEMPTION_LIMIT && res.totalTributavel >= IRPF_RULES.ANNUAL_EXEMPTION_LIMIT && (
+                        <div className="mt-3 p-3 bg-blue-50/50 border border-blue-100 rounded-lg text-[11px] text-blue-800 leading-relaxed font-medium">
+                          <strong>Aviso:</strong> Após aplicação das deduções legais sobre os rendimentos tributados, a base líquida resultou em um valor menor que {formatBRL(IRPF_RULES.ANNUAL_EXEMPTION_LIMIT)}.
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1162,5 +1135,51 @@ function Result({ data, reset }: { data: FormData; reset: () => void }) {
         <button onClick={reset} className="text-sub font-bold hover:text-deep transition-colors">← Refazer Simulação</button>
       </div>
     </div>
+  );
+}
+
+function MoneyInput({ 
+  value, 
+  onChange, 
+  placeholder = "0,00", 
+  limit 
+}: { 
+  value: number; 
+  onChange: (val: number) => void; 
+  placeholder?: string; 
+  limit?: number;
+}) {
+  const formatValue = (num: number) => {
+    return num.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawDigits = e.target.value.replace(/\D/g, "");
+    if (!rawDigits) {
+      onChange(0);
+      return;
+    }
+    
+    let numeric = parseFloat(rawDigits) / 100;
+    
+    if (limit && numeric > limit) {
+      numeric = limit;
+    }
+    
+    onChange(numeric);
+  };
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      value={value > 0 ? formatValue(value) : ""}
+      onChange={handleChange}
+      className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
+      placeholder={placeholder}
+    />
   );
 }

@@ -7,6 +7,7 @@ export const IRPF_RULES = {
   ANNUAL_EXEMPTION_LIMIT: 35584.0, // Threshold for mandatory declaration
   ANNUAL_ASSETS_LIMIT: 800000.0,   // Threshold for assets
   ANNUAL_EXEMPT_INCOME_LIMIT: 200000.0, // Threshold for exempt income
+  MEI_ANNUAL_LIMIT: 81000.0,          // Limit for MEI revenue
   
   MONTHLY_EXEMPTION_LIMIT: 2965.33, // 35584 / 12
   
@@ -70,7 +71,9 @@ export function calculateAnnual2026(params: {
   // 3. MEI: Isenção vs Tributável
   const pctIsentoMEI = params.meiAtiv === "serv" ? 0.32 : params.meiAtiv === "com" ? 0.08 : 0.20;
   const lucroIsentoMEI = params.mei * pctIsentoMEI;
-  const rendimentoMEITributavel = Math.max(0, params.mei - lucroIsentoMEI);
+  
+  // Como solicitado, a parcela tributável do MEI não será somada à base de cálculo da PF no simulador
+  const rendimentoMEITributavel = 0;
 
   // Totals for Base
   const totalTributavel = rendimentoCLT + params.liberal + params.proLaborePJ + rendimentoApoTributavel + rendimentoMEITributavel;
@@ -91,7 +94,7 @@ export function calculateAnnual2026(params: {
 
   // B. COMPLETO
   const dedDepend = params.dependentes * IRPF_RULES.DEPENDENT_DEDUCTION_ANNUAL;
-  const dedEduc = Math.min(params.educacao, IRPF_RULES.EDUCATION_DEDUCTION_LIMIT_ANNUAL * (params.dependentes + 1));
+  const dedEduc = Math.min(params.educacao, IRPF_RULES.EDUCATION_DEDUCTION_LIMIT_ANNUAL);
   const dedSaude = params.saude;
   const totalDeducoes = totalINSS + dedDepend + dedEduc + dedSaude;
   const baseComp = Math.max(0, totalTributavel - totalDeducoes);
