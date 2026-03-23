@@ -9,6 +9,7 @@ interface LeadData {
   patrimonio: number;
   vinculos: string;
   situacoes: string;
+  isento: number;
 }
 
 export async function saveLead(data: LeadData) {
@@ -20,6 +21,7 @@ export async function saveLead(data: LeadData) {
       patrimonio: data.patrimonio,
       vinculos: data.vinculos,
       situacoes: data.situacoes,
+      isento: data.isento,
       origem: "simulador_v3_steps",
     },
   });
