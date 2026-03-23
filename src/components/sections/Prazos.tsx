@@ -70,7 +70,7 @@ export default function Prazos() {
                 <div className="tl-vline"></div>
               </div>
               <div className="tl-card">
-                <div className="tl-date-pill">15 DE MARÇO</div>
+                <div className="tl-date-pill">23 DE MARÇO</div>
                 <div className="tl-title">Início das entregas</div>
                 <div className="tl-desc">
                   Abertura oficial do prazo para transmissão da Declaração de Ajuste Anual IRPF 2026 à Receita Federal.
