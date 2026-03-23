@@ -5,11 +5,12 @@ import { prisma } from "@/lib/prisma";
 interface LeadData {
   email: string;
   whatsapp: string;
-  rendimentos: number;
-  patrimonio: number;
   vinculos: string;
   situacoes: string;
   isento: number;
+  tributavel: number;
+  imposto: number;
+  obrigado: boolean;
 }
 
 export async function saveLead(data: LeadData) {
@@ -17,8 +18,8 @@ export async function saveLead(data: LeadData) {
     data: {
       email: data.email,
       whatsapp: data.whatsapp,
-      rendimentos: data.rendimentos,
-      patrimonio: data.patrimonio,
+      rendimentos: data.tributavel, // mapping to existing field if possible, or new ones
+      patrimonio: 0, // mapping if existing
       vinculos: data.vinculos,
       situacoes: data.situacoes,
       isento: data.isento,

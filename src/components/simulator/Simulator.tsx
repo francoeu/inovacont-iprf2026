@@ -12,15 +12,19 @@ interface FormData {
   salarioMensal: number;
   mesesTrabalhados: number;
   recebeu13: "completo" | "proporcional" | "nao";
+  valor13: number;
   // Liberal
   rendimentoLiberal: number;
   // PJ
   proLaborePJ: number;
   lucrosPJ: number;
+  irRetidoPJ: number;
   // MEI
   rendimentoMEI: number;
+  meiAtiv: "serv" | "com" | "misto";
   // Aposentado
   rendimentoAposentado: number;
+  idade65: boolean;
   // Outros
   rendimentoOutros: number;
   // Patrimonio
@@ -46,11 +50,15 @@ export default function Simulator() {
     salarioMensal: 0,
     mesesTrabalhados: 12,
     recebeu13: "completo",
+    valor13: 0,
     rendimentoLiberal: 0,
     proLaborePJ: 0,
     lucrosPJ: 0,
+    irRetidoPJ: 0,
     rendimentoMEI: 0,
+    meiAtiv: "serv",
     rendimentoAposentado: 0,
+    idade65: false,
     rendimentoOutros: 0,
     patrimonio: 0,
     operouBolsa: "nao",
@@ -131,13 +139,13 @@ export default function Simulator() {
               {step + 1}
             </div>
             <h3 className="text-sm font-bold tracking-wider uppercase">
-            {step === 0 && "1. Qual seu vínculo profissional em 2025?"}
-            {step === 1 && "2. Rendimentos: CLT + Profissional Liberal"}
-            {step === 2 && "3. Seu patrimônio e outros rendimentos"}
-            {step === 3 && "4. Suas deduções e situações especiais"}
-            {step === 4 && "5. Confira seu resultado IRPF 2026"}
-            </h3>
-          </div>
+             {step === 0 && "1. Qual seu vínculo profissional em 2025?"}
+             {step === 1 && `2. Rendimentos: ${formData.vinculos.map(v => v === 'clt' ? 'CLT' : v === 'liberal' ? 'Autônomo' : v === 'pj' ? 'PJ' : v === 'mei' ? 'MEI' : 'Aposentado').join(' + ')}`}
+             {step === 2 && "3. Seu patrimônio e outros rendimentos"}
+             {step === 3 && "4. Suas deduções e situações especiais"}
+             {step === 4 && "5. Confira seu resultado IRPF 2026"}
+             </h3>
+           </div>
 
           <div className="sim-card-body p-8 md:p-10">
             {step === 0 && (
@@ -149,51 +157,51 @@ export default function Simulator() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                   <VinculoOption
-                    icon="💼"
+                    icon="👔"
                     title="CLT"
-                    desc="Empregado com carteira assinada. INSS retido pelo empregador."
+                    desc="Trabalha com carteira assinada. INSS retido na fonte."
                     active={formData.vinculos.includes("clt")}
                     onClick={() => toggleVinculo("clt")}
                   />
                   <VinculoOption
-                    icon="👨‍⚕️"
+                    icon="🩺"
                     title="Profissional Liberal / Autônomo"
-                    desc="Emite RPA, recibo ou NFS-e no CPF. INSS como contribuinte individual (20%)."
+                    desc="Recebe honorários ou é autônomo. Emite recibo no CPF."
                     active={formData.vinculos.includes("liberal")}
                     onClick={() => toggleVinculo("liberal")}
                   />
                   <VinculoOption
                     icon="🏢"
-                    title="PJ — Pessoa Jurídica"
-                    desc="Recebe pró-labore como sócio de empresa. Distribui lucros isentos. Incompatível com MEI."
+                    title="Sócios de Empresa (PJ)"
+                    desc="Recebe pró-labore ou dividendos. Incompatível com MEI."
                     active={formData.vinculos.includes("pj")}
                     disabled={formData.vinculos.includes("mei")}
                     onClick={() => toggleVinculo("pj")}
                   />
                   <VinculoOption
                     icon="🏅"
-                    title="Aposentado / Pensionista"
-                    desc="Benefício INSS, previdência privada ou pensão alimentícia."
+                    title="Aposentado ou Pensionista"
+                    desc="Recebe benefício do INSS ou Previdência privada."
                     active={formData.vinculos.includes("apo")}
                     onClick={() => toggleVinculo("apo")}
                   />
                   <VinculoOption
-                    icon="🌕"
-                    title="MEI — Microempreendedor"
-                    desc="Lucro presumido isento (32% serviços ou 8% comércio). DAS fixo mensal. Incompatível com PJ."
+                    icon="🟡"
+                    title="MEI"
+                    desc="Microempreendedor Individual. Incompatível com PJ."
                     active={formData.vinculos.includes("mei")}
                     disabled={formData.vinculos.includes("pj")}
                     onClick={() => toggleVinculo("mei")}
                   />
                 </div>
 
-                <div className="flex justify-end pt-6 border-top border-gray-100">
+                <div className="flex justify-end pt-6 border-t border-gray-100">
                   <button 
                     onClick={next} 
                     disabled={formData.vinculos.length === 0}
-                    className="bg-[#120A45] text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-deep transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-[#120A45] text-white px-10 py-4 rounded-xl font-bold flex items-center gap-2 hover:bg-deep transition-all shadow-xl shadow-violet/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Próximo →
+                    Próximo Passo →
                   </button>
                 </div>
               </div>
@@ -205,7 +213,7 @@ export default function Simulator() {
                 {formData.vinculos.includes("clt") && (
                   <div className="mb-10 last:mb-0">
                     <div className="flex items-center gap-2 mb-6">
-                      <span className="text-lg">🏙️</span>
+                      <span className="text-lg">👔</span>
                       <h4 className="text-xs font-bold text-violet uppercase tracking-widest">Sua renda como CLT</h4>
                     </div>
                     
@@ -226,7 +234,7 @@ export default function Simulator() {
 
                       <div className="flex flex-col md:flex-row gap-6">
                         <div className="flex-1">
-                          <label className="block text-[13px] font-bold text-deep mb-3">Meses trabalhados em 2025</label>
+                          <label className="block text-[13px] font-bold text-deep mb-3">Por quantos meses trabalhou com carteira assinada em 2025?</label>
                           <input
                             type="number"
                             min="1"
@@ -235,9 +243,6 @@ export default function Simulator() {
                             onChange={(e) => setFormData({...formData, mesesTrabalhados: parseInt(e.target.value) || 0})}
                             className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 px-4 font-bold text-deep transition-all"
                           />
-                        </div>
-                        <div className="flex-2">
-                           {/* Empty space or additional fields */}
                         </div>
                       </div>
 
@@ -256,6 +261,21 @@ export default function Simulator() {
                             active={formData.recebeu13 === "proporcional"}
                             onClick={() => setFormData({...formData, recebeu13: "proporcional"})}
                           />
+                          {formData.recebeu13 === "proporcional" && (
+                            <div className="pl-9 animate-fade-in">
+                              <label className="block text-[11px] font-bold text-deep mb-2">Valor bruto do 13º recebido</label>
+                              <div className="relative max-w-md">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold text-xs">R$</span>
+                                <input
+                                  type="number"
+                                  value={formData.valor13 || ""}
+                                  onChange={(e) => setFormData({...formData, valor13: parseFloat(e.target.value) || 0})}
+                                  className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-2 pl-10 pr-4 font-bold text-deep text-sm transition-all"
+                                  placeholder="0,00"
+                                />
+                              </div>
+                            </div>
+                          )}
                           <RadioOption 
                             label="Não recebi 13º em 2025"
                             active={formData.recebeu13 === "nao"}
@@ -304,7 +324,7 @@ export default function Simulator() {
                     
                     <div className="space-y-6">
                       <div>
-                        <label className="block text-[13px] font-bold text-deep mb-3">Total de Pró-labore recebido em 2025</label>
+                        <label className="block text-[13px] font-bold text-deep mb-3">Valor total do Pró-labore recebido em 2025</label>
                         <div className="relative max-w-md">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
                           <input
@@ -315,11 +335,10 @@ export default function Simulator() {
                             placeholder="0,00"
                           />
                         </div>
-                        <p className="mt-2 text-[11px] text-gray-400 uppercase tracking-tighter">Rendimento Tributável</p>
                       </div>
 
                       <div>
-                        <label className="block text-[13px] font-bold text-deep mb-3">Total de Lucros/Dividendos distribuídos em 2025</label>
+                        <label className="block text-[13px] font-bold text-deep mb-3">Qual foi o total de distribuição de lucros recebido em 2025?</label>
                         <div className="relative max-w-md">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
                           <input
@@ -330,7 +349,20 @@ export default function Simulator() {
                             placeholder="0,00"
                           />
                         </div>
-                        <p className="mt-2 text-[11px] text-gray-400 uppercase tracking-tighter">Rendimento Isento</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-[13px] font-bold text-deep mb-3">Qual foi o total de IR retido na fonte ao longo de 2025?</label>
+                        <div className="relative max-w-md">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
+                          <input
+                            type="number"
+                            value={formData.irRetidoPJ || ""}
+                            onChange={(e) => setFormData({...formData, irRetidoPJ: parseFloat(e.target.value) || 0})}
+                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
+                            placeholder="0,00"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -340,23 +372,49 @@ export default function Simulator() {
                 {formData.vinculos.includes("mei") && (
                   <div className="mb-10 pt-10 border-t border-gray-100 last:mb-0">
                     <div className="flex items-center gap-2 mb-6">
-                      <span className="text-lg">🌕</span>
-                      <h4 className="text-xs font-bold text-violet uppercase tracking-widest">Sua renda como MEI</h4>
+                      <span className="text-lg">🟡</span>
+                      <h4 className="text-xs font-bold text-violet uppercase tracking-widest">Sua atividade como MEI</h4>
                     </div>
                     
-                    <div>
-                      <label className="block text-[13px] font-bold text-deep mb-3">Rendimento líquido (Isento) do MEI em 2025</label>
-                      <div className="relative max-w-md">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                        <input
-                          type="number"
-                          value={formData.rendimentoMEI || ""}
-                          onChange={(e) => setFormData({...formData, rendimentoMEI: parseFloat(e.target.value) || 0})}
-                          className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                          placeholder="0,00"
-                        />
+                    <div className="space-y-6">
+                      <div className="field-group">
+                        <label className="block text-[13px] font-bold text-deep mb-3">Qual é a atividade principal do seu MEI?</label>
+                        <div className="space-y-2">
+                          <RadioOption 
+                            label="🛠️ Prestação de serviços"
+                            sub="Isenta 32% do faturamento de IR PF"
+                            active={formData.meiAtiv === "serv"}
+                            onClick={() => setFormData({...formData, meiAtiv: "serv"})}
+                          />
+                          <RadioOption 
+                            label="🛒 Comércio / indústria"
+                            sub="Isenta 8% do faturamento de IR PF"
+                            active={formData.meiAtiv === "com"}
+                            onClick={() => setFormData({...formData, meiAtiv: "com"})}
+                          />
+                          <RadioOption 
+                            label="⚡ Possui as duas atividades"
+                            sub="Isenção proporcional — média de 20%"
+                            active={formData.meiAtiv === "misto"}
+                            onClick={() => setFormData({...formData, meiAtiv: "misto"})}
+                          />
+                        </div>
                       </div>
-                      <p className="mt-3 text-[11px] text-gray-400">Lucro distribuído após descontar as despesas e a parcela tributável.</p>
+
+                      <div>
+                        <label className="block text-[13px] font-bold text-deep mb-3">Quanto faturou pelo seu MEI em 2025 (total do ano)?</label>
+                        <div className="relative max-w-md">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
+                          <input
+                            type="number"
+                            value={formData.rendimentoMEI || ""}
+                            onChange={(e) => setFormData({...formData, rendimentoMEI: parseFloat(e.target.value) || 0})}
+                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
+                            placeholder="0,00"
+                          />
+                        </div>
+                        <p className="mt-3 text-[11px] text-gray-400">Limite do MEI em 2025: R$ 81.000/ano.</p>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -369,17 +427,36 @@ export default function Simulator() {
                       <h4 className="text-xs font-bold text-violet uppercase tracking-widest">Sua renda como Aposentado/Pensionista</h4>
                     </div>
                     
-                    <div>
-                      <label className="block text-[13px] font-bold text-deep mb-3">Total bruto recebido em 2025</label>
-                      <div className="relative max-w-md">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                        <input
-                          type="number"
-                          value={formData.rendimentoAposentado || ""}
-                          onChange={(e) => setFormData({...formData, rendimentoAposentado: parseFloat(e.target.value) || 0})}
-                          className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                          placeholder="0,00"
-                        />
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-[13px] font-bold text-deep mb-3">Qual é o valor bruto do seu benefício anual em 2025?</label>
+                        <div className="relative max-w-md">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
+                          <input
+                            type="number"
+                            value={formData.rendimentoAposentado || ""}
+                            onChange={(e) => setFormData({...formData, rendimentoAposentado: parseFloat(e.target.value) || 0})}
+                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
+                            placeholder="0,00"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-[13px] font-bold text-deep mb-3">Tinha 65 anos ou mais em 2025?</label>
+                        <div className="space-y-2">
+                          <RadioOption 
+                            label="Sim — tinha 65 anos ou mais"
+                            sub="Isenção extra de R$ 2.824/mês (Art. 6º, XV, Lei 7.713/88)"
+                            active={formData.idade65 === true}
+                            onClick={() => setFormData({...formData, idade65: true})}
+                          />
+                          <RadioOption 
+                            label="Não"
+                            active={formData.idade65 === false}
+                            onClick={() => setFormData({...formData, idade65: false})}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -416,7 +493,7 @@ export default function Simulator() {
                   </div>
 
                   <div>
-                    <label className="block text-[13px] font-bold text-deep mb-3">Recebeu outros rendimentos isentos ou tributados na fonte em 2025?</label>
+                    <label className="block text-[13px] font-bold text-deep mb-3">Recebeu rendimentos isentos ou tributados na fonte em 2025?</label>
                     <div className="relative max-w-md">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
                       <input
@@ -427,7 +504,7 @@ export default function Simulator() {
                         placeholder="0,00"
                       />
                     </div>
-                    <p className="mt-2 text-[11px] text-gray-400 italic">Ex.: PLR, FGTS sacado, poupança, LCI/LCA, dividendos, heranças, indenizações. Rendas de PJ/MEI já informadas anteriormente não precisam ser repetidas aqui.</p>
+                    <p className="mt-2 text-[11px] text-gray-400 italic">Ex.: PLR, FGTS sacado, poupança, LCI/LCA, dividendos, heranças, indenizações, observação: O 13º salário já é informado no bloco CLT.</p>
                   </div>
 
                   <div>
@@ -720,50 +797,69 @@ function VinculoOption({
 }
 
 function Result({ data, reset }: { data: FormData; reset: () => void }) {
+  const [isSent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
 
-  const calc = calculateAnnual2026({
-    salarioMensal: data.salarioMensal,
-    mesesTrabalhados: data.mesesTrabalhados,
+  // Use state for email and whatsapp to handle form changes
+  const [email, setEmail] = useState(data.email);
+  const [whatsapp, setWhatsapp] = useState(data.whatsapp);
+
+  const res = calculateAnnual2026({
+    clt: data.salarioMensal,
+    meses: data.mesesTrabalhados,
     recebeu13: data.recebeu13,
-    rendimentoLiberal: data.rendimentoLiberal,
+    valor13: data.valor13,
+    liberal: data.rendimentoLiberal,
     proLaborePJ: data.proLaborePJ,
     lucrosPJ: data.lucrosPJ,
-    rendimentoMEI: data.rendimentoMEI,
-    rendimentoAposentado: data.rendimentoAposentado,
+    irRetidoPJ: data.irRetidoPJ,
+    mei: data.rendimentoMEI,
+    meiAtiv: data.meiAtiv,
+    aposentadoria: data.rendimentoAposentado,
+    idade65: data.idade65,
+    outrosIsentos: data.rendimentoOutros,
     dependentes: data.dependentes,
-    gastosSaude: data.gastosSaude,
-    gastosEducacao: data.gastosEducacao,
-    tipoCalculo: data.tipoCalculo,
+    saude: data.gastosSaude,
+    educacao: data.gastosEducacao,
   });
 
-  const totalIsentos = calc.totalIsentos + data.rendimentoOutros;
-  const totalRendimentos = calc.totalRendimentos + totalIsentos;
+  const model =
+    data.tipoCalculo === "simplificado"
+      ? res.simplificado
+      : data.tipoCalculo === "completo"
+      ? res.completo
+      : res.simplificado.imposto < res.completo.imposto
+      ? res.simplificado
+      : res.completo;
 
-  const isObrigadoRenda = calc.totalRendimentos > IRPF_RULES.ANNUAL_EXEMPTION_LIMIT;
-  const isObrigadoIsentos = totalIsentos > 50000; // Simplified criteria for isentos (example)
-  const isObrigadoPatrimonio = data.patrimonio > IRPF_RULES.ANNUAL_ASSETS_LIMIT;
-  const isObrigadoExterior = data.situacoes.includes("exterior");
-  const isObrigadoBolsa = data.operouBolsa === "sim";
-  
-  const isObrigado = isObrigadoRenda || isObrigadoPatrimonio || isObrigadoExterior || isObrigadoBolsa || isObrigadoIsentos;
+  const isSimplified = model === res.simplificado;
 
-  const handleSendLead = async () => {
-    if (!email || !phone) return;
+  // Obrigatoriedade Logic (IN RFB 2.312/2026)
+  const reasons = [];
+  if (res.totalTributavel > IRPF_RULES.ANNUAL_EXEMPTION_LIMIT) reasons.push(`Rendimentos tributáveis acima de ${formatBRL(IRPF_RULES.ANNUAL_EXEMPTION_LIMIT)}`);
+  if (res.totalIsento > IRPF_RULES.ANNUAL_EXEMPT_INCOME_LIMIT) reasons.push(`Rendimentos isentos/não tributáveis acima de ${formatBRL(IRPF_RULES.ANNUAL_EXEMPT_INCOME_LIMIT)}`);
+  if (data.patrimonio > IRPF_RULES.ANNUAL_ASSETS_LIMIT) reasons.push(`Posse de bens ou direitos acima de ${formatBRL(IRPF_RULES.ANNUAL_ASSETS_LIMIT)}`);
+  if (data.operouBolsa === "sim") reasons.push("Operações em bolsa de valores/mercados futuros");
+  if (data.vendeuBem === "sim") reasons.push("Ganho de capital na alienação de bens ou direitos");
+  if (data.situacoes.includes("exterior")) reasons.push("Bens ou direitos no exterior (Lei 14.754)");
+  if (data.situacoes.includes("residente")) reasons.push("Passou à condição de residente no Brasil em 2025");
+  if (data.situacoes.includes("rural") && (data.rendimentoLiberal + data.rendimentoMEI) > 153199.50) reasons.push("Receita bruta rural acima de R$ 153.199,50");
+
+  const isObrigado = reasons.length > 0;
+
+  const handleLead = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
-
     try {
       await saveLead({
-        email,
-        whatsapp: phone,
-        rendimentos: calc.totalRendimentos,
-        patrimonio: data.patrimonio,
+        email: email,
+        whatsapp: whatsapp,
         vinculos: data.vinculos.join(","),
         situacoes: data.situacoes.join(","),
-        isento: totalIsentos,
+        isento: res.totalIsento,
+        tributavel: res.totalTributavel,
+        imposto: model.imposto,
+        obrigado: isObrigado,
       });
 
       setSent(true);
@@ -771,117 +867,121 @@ function Result({ data, reset }: { data: FormData; reset: () => void }) {
       const text = encodeURIComponent(
         `Olá! Fiz a simulação do IRPF 2026 e o resultado foi ${
           isObrigado ? "Obrigado" : "Isento"
-        }. Gostaria de receber o checklist e falar com um contador.`
+        }. Gostaria de falar com um especialista sobre meu caso.`
       );
       window.open(`https://wa.me/5574999697652?text=${text}`, "_blank");
-    } catch (err: any) {
-      console.error("Erro ao salvar lead:", err);
-      alert("Erro ao enviar seus dados. Tente novamente.");
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao salvar. Tente novamente.");
     } finally {
       setLoading(false);
     }
   };
 
+  if (isSent) {
+    return (
+      <div className="text-center py-12 animate-fade-in">
+        <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">✓</div>
+        <h3 className="text-2xl font-bold text-deep mb-4">Dados enviados com sucesso!</h3>
+        <p className="text-sub max-w-md mx-auto mb-8">Nossa equipe analisará seu perfil e entrará em contato em breve para garantir que você pague o mínimo de imposto legalmente possível.</p>
+        <button onClick={reset} className="text-violet font-bold hover:underline">Fazer nova simulação</button>
+      </div>
+    );
+  }
+
   return (
     <div className="animate-fade-in">
-      <div
-        className={`result-box p-8 rounded-2xl flex gap-6 items-start border-2 mb-8 ${
-          isObrigado ? "bg-[#FFF8EC] border-gold" : "bg-[#EAFAF1] border-green"
-        }`}
-      >
-        <div className="text-4xl">{isObrigado ? "⚠️" : "✅"}</div>
+      <div className="grid md:grid-cols-2 gap-10">
         <div>
-          <h3 className="text-xl font-extrabold text-deep mb-2">
-            {isObrigado ? "Sua declaração é OBRIGATÓRIA!" : "Você está ISENTO de declarar!"}
-          </h3>
-          <p className="text-sub text-sm leading-relaxed">
-            {isObrigado 
-              ? `De acordo com os dados informados, você atingiu critérios de obrigatoriedade da IN RFB 2.312/2026 (Limite: ${formatBRL(35584)} em rendas ou ${formatBRL(800000)} em bens).` 
-              : "Parabéns! Seus rendimentos e patrimônio informados estão dentro do limite de isenção da Receita Federal para 2026."}
+          <div className="mb-8">
+            <h4 className="text-xs font-bold text-violet uppercase tracking-widest mb-2">Diagnóstico Fiscal</h4>
+            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold ${isObrigado ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600"}`}>
+              <span className={`w-2 h-2 rounded-full ${isObrigado ? "bg-red-500" : "bg-green-500"}`}></span>
+              {isObrigado ? "OBRIGADO A DECLARAR" : "DISPENSADO DA DECLARAÇÃO*"}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="bg-bg p-5 rounded-2xl flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-500">Rendimento Tributável Anual</span>
+              <span className="text-lg font-bold text-deep">{formatBRL(res.totalTributavel)}</span>
+            </div>
+            <div className="bg-bg p-5 rounded-2xl flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-500">Rendimento Isento (Incluso MEI)</span>
+              <span className="text-lg font-bold text-deep">{formatBRL(res.totalIsento)}</span>
+            </div>
+            
+            <div className="bg-[#120A45] p-6 rounded-2xl text-white shadow-xl shadow-violet/20">
+              <div className="flex justify-between items-start mb-4">
+                <span className="text-xs font-bold uppercase tracking-widest opacity-60">Estimativa de Imposto</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded text-[10px] font-bold">{isSimplified ? "SIMPLIFICADO" : "COMPLETO"}</span>
+              </div>
+              <div className="text-3xl font-black mb-2">{formatBRL(model.imposto)}</div>
+              <div className="text-[11px] opacity-70 border-t border-white/10 pt-3 flex justify-between items-center">
+                <span>Alíquota Efetiva: <strong>{model.aliquotaEfetiva.toFixed(2)}%</strong></span>
+                <span className="text-gold-lt font-bold uppercase tracking-tighter">Sugestão: {isSimplified ? "Simplificado" : "Completo"}</span>
+              </div>
+            </div>
+          </div>
+
+          {isObrigado && (
+            <div className="mt-8 p-5 bg-red-50 rounded-2xl border border-red-100">
+              <h5 className="text-[13px] font-bold text-red-800 mb-3 flex items-center gap-2">
+                <span>⚠️</span> Critérios de Obrigatoriedade atendidos:
+              </h5>
+              <ul className="space-y-2">
+                {reasons.map((r, i) => (
+                  <li key={i} className="text-[12px] text-red-700 flex items-start gap-2">
+                    <span className="text-red-400">•</span> {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-violet/5 p-8 rounded-3xl border border-violet/10">
+          <h4 className="text-xl font-bold text-deep mb-4">Receba seu planejamento detalhado</h4>
+          <p className="text-sm text-sub mb-8 leading-relaxed">
+            Deixe seus contatos e um especialista entrará em contato para validar sua simulação.
           </p>
-        </div>
-      </div>
 
-      <div className="bg-[#120A45] rounded-2xl p-8 text-white mb-10">
-        <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#8B78EF] mb-6">Resumo da Simulação</h4>
-        <div className="space-y-3">
-          <div className="flex justify-between p-4 bg-white/5 rounded-xl">
-            <span className="text-white/60 text-sm">Renda Tributável 2025</span>
-            <span className="font-bold text-base">{formatBRL(calc.totalRendimentos)}</span>
-          </div>
-          <div className="flex justify-between p-4 bg-white/5 rounded-xl">
-            <span className="text-white/60 text-sm">Imposto Estimado</span>
-            <span className="font-bold text-base text-violet">{formatBRL(calc.impostoDevido)}</span>
-          </div>
-          <div className="flex justify-between p-4 bg-white/5 rounded-xl">
-            <span className="text-white/60 text-sm">Modelo Sugerido</span>
-            <span className="font-bold text-sm uppercase tracking-wider text-green-400">{calc.modeloMaisVantajoso}</span>
-          </div>
-          <div className="flex justify-between p-4 bg-white/5 rounded-xl">
-            <span className="text-white/60 text-sm">Rendimentos Isentos</span>
-            <span className="font-bold text-base">{formatBRL(totalIsentos)}</span>
-          </div>
-          <div className="flex justify-between p-4 bg-white/5 rounded-xl">
-            <span className="text-white/60 text-sm">Patrimônio Declarado</span>
-            <span className="font-bold text-base">{formatBRL(data.patrimonio)}</span>
-          </div>
-          <div className="flex justify-between p-4 bg-white/10 rounded-xl border border-white/10">
-            <span className="text-white font-bold text-sm">Obrigatoriedade</span>
-            <span className={`font-extrabold text-base ${isObrigado ? "text-[#FFC84A]" : "text-[#2ECC71]"}`}>
-              {isObrigado ? "SIM" : "NÃO"}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="merch-inline-card overflow-hidden relative bg-[#F4F2FF] p-10 rounded-3xl border border-violet/20 flex flex-col items-center text-center">
-        <div className="absolute -top-24 -right-24 w-64 h-64 bg-violet/10 rounded-full blur-3xl"></div>
-        <span className="bg-violet text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-6">Presente Exclusivo</span>
-        <h4 className="text-2xl font-extrabold text-deep mb-4 max-w-sm">
-          Receba o <strong>Checklist Completo</strong> para não cair na Malha Fina
-        </h4>
-        <p className="text-sub text-sm mb-8 max-w-md">
-          {sent 
-            ? "Tudo pronto! Seus dados foram enviados e um especialista entrará em contato em breve."
-            : "Deixe seu WhatsApp e enviaremos imediatamente a lista de documentos necessários para garantir sua restituição máxima em 2026."}
-        </p>
-
-        {!sent && (
-          <div className="w-full max-w-lg space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form className="space-y-4" onSubmit={handleLead}>
+            <div>
+              <label className="block text-[11px] font-bold text-violet uppercase tracking-widest mb-2 px-1">Seu melhor E-mail</label>
               <input
+                required
                 type="email"
-                placeholder="Seu melhor e-mail"
-                className="bg-white border border-gray-200 outline-none focus:border-violet p-4 rounded-xl font-medium text-deep transition-all"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-              />
-              <input
-                type="tel"
-                placeholder="WhatsApp (com DDD)"
-                className="bg-white border border-gray-200 outline-none focus:border-violet p-4 rounded-xl font-medium text-deep transition-all"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                placeholder="exemplo@email.com"
+                className="w-full bg-white border border-gray-200 outline-none focus:border-violet rounded-xl py-3 px-4 font-bold text-deep transition-all shadow-sm"
               />
             </div>
-            <button
-              onClick={handleSendLead}
-              disabled={loading || !email || !phone}
-              className="w-full bg-[#25D366] hover:bg-[#1ebe5a] text-white py-4 rounded-xl font-extrabold shadow-lg shadow-green-500/20 transition-all active:scale-[0.98] disabled:opacity-50"
+            <div>
+              <label className="block text-[11px] font-bold text-violet uppercase tracking-widest mb-2 px-1">WhatsApp para contato</label>
+              <input
+                required
+                type="tel"
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value)}
+                placeholder="(00) 00000-0000"
+                className="w-full bg-white border border-gray-200 outline-none focus:border-violet rounded-xl py-3 px-4 font-bold text-deep transition-all shadow-sm"
+              />
+            </div>
+            
+            <button 
+              disabled={loading}
+              className="w-full bg-[#120A45] text-white py-4 rounded-xl font-bold mt-4 hover:bg-deep transition-all shadow-lg active:scale-[0.98] disabled:opacity-50"
             >
-              {loading ? "Processando..." : "Receber Checklist no WhatsApp 🚀"}
+              {loading ? "Processando..." : "Consultar Consultor IRPF Especialista"}
             </button>
-          </div>
-        )}
+          </form>
+        </div>
       </div>
-
-      <div className="text-center mt-12">
-        <button
-          onClick={reset}
-          className="w-full mt-4 py-3 text-white/40 font-bold hover:text-white transition-colors"
-        >
-          ← Refazer Simulação
-        </button>
+      
+      <div className="text-center mt-12 pt-8 border-t border-gray-100">
+        <button onClick={reset} className="text-sub font-bold hover:text-deep transition-colors">← Refazer Simulação</button>
       </div>
     </div>
   );

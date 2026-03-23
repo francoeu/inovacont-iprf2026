@@ -1,0 +1,23 @@
+
+> next_temp@0.1.0 build
+> next build
+
+Ôû▓ Next.js 16.2.0 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 3.7s
+  Running TypeScript ...
+Failed to type check.
+
+./src/components/sections/CalcPFvsPJ.tsx:112:39
+Type error: Property 'iss' does not exist on type '{ inss: number; ir: number; total: number; liquido: number; }'. Did you mean 'inss'?
+
+  110 |                 <div className="calc-card-t-row">
+  111 |                   <span>ISS (5%)</span>
+> 112 |                   <span>{formatBRL(pf.iss)}</span>
+      |                                       ^
+  113 |                 </div>
+  114 |                 <div className="calc-card-t-net">
+  115 |                   <div className="net-label">L├¡quido Final</div>
+Next.js build worker exited with code: 1 and signal: null

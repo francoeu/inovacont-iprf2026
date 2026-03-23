@@ -1,0 +1,23 @@
+
+> next_temp@0.1.0 build
+> next build
+
+Ôû▓ Next.js 16.2.0 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 2.3s
+  Running TypeScript ...
+Failed to type check.
+
+./src/components/sections/CalcPFvsPJ.tsx:4:21
+Type error: Module '"@/lib/irpf-calculator"' has no exported member 'calculatePF'.
+
+  2 |
+  3 | import { useState, useMemo } from "react";
+> 4 | import { formatBRL, calculatePF, calculatePJ } from "@/lib/irpf-calculator";
+    |                     ^
+  5 |
+  6 | export default function CalcPFvsPJ() {
+  7 |   const [income, setIncome] = useState(15000);
+Next.js build worker exited with code: 1 and signal: null
