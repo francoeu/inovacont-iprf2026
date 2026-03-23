@@ -73,6 +73,18 @@ export default function Simulator() {
   });
 
   const next = () => {
+    // If moving from Rendimentos (Step 1) to Patrimonio (Step 2)
+    if (step === 1 && formData.vinculos.includes("mei")) {
+      const pct = formData.meiAtiv === "serv" ? 0.32 : formData.meiAtiv === "com" ? 0.08 : 0.20;
+      const profit = formData.rendimentoMEI * pct;
+      
+      // We set rendimentoOutros with the profit, but only if it was 0 or just help the user see it
+      setFormData(prev => ({
+        ...prev,
+        rendimentoOutros: prev.rendimentoOutros === 0 ? profit : prev.rendimentoOutros
+      }));
+    }
+
     setStep((s) => (s + 1) as Step);
     const top = document.getElementById('simulator')?.offsetTop ? document.getElementById('simulator')!.offsetTop - 80 : 0;
     window.scrollTo({ top, behavior: 'smooth' });
@@ -505,6 +517,11 @@ export default function Simulator() {
                       />
                     </div>
                     <p className="mt-2 text-[11px] text-gray-400 italic">Ex.: PLR, FGTS sacado, poupança, LCI/LCA, dividendos, heranças, indenizações, observação: O 13º salário já é informado no bloco CLT.</p>
+                    {formData.vinculos.includes("mei") && formData.rendimentoMEI > 0 && (
+                      <p className="mt-2 text-[11px] text-violet font-bold bg-violet/5 p-2 rounded-lg border border-violet/10">
+                        ✨ Incluímos automaticamente {formatBRL(formData.rendimentoMEI * (formData.meiAtiv === "serv" ? 0.32 : formData.meiAtiv === "com" ? 0.08 : 0.20))} referentes à isenção presumida do seu MEI ({formData.meiAtiv === "serv" ? "32%" : formData.meiAtiv === "com" ? "8%" : "20%"}).
+                      </p>
+                    )}
                   </div>
 
                   <div>
