@@ -14,8 +14,15 @@ interface FormData {
   recebeu13: "completo" | "proporcional" | "nao";
   // Liberal
   rendimentoLiberal: number;
-  // PJ / MEI / Outros
-  rendimentoIsento: number;
+  // PJ
+  proLaborePJ: number;
+  lucrosPJ: number;
+  // MEI
+  rendimentoMEI: number;
+  // Aposentado
+  rendimentoAposentado: number;
+  // Outros
+  rendimentoOutros: number;
   // Patrimonio
   patrimonio: number;
   operouBolsa: "sim" | "nao";
@@ -40,7 +47,11 @@ export default function Simulator() {
     mesesTrabalhados: 12,
     recebeu13: "completo",
     rendimentoLiberal: 0,
-    rendimentoIsento: 0,
+    proLaborePJ: 0,
+    lucrosPJ: 0,
+    rendimentoMEI: 0,
+    rendimentoAposentado: 0,
+    rendimentoOutros: 0,
     patrimonio: 0,
     operouBolsa: "nao",
     vendeuBem: "nao",
@@ -156,6 +167,7 @@ export default function Simulator() {
                     title="PJ — Pessoa Jurídica"
                     desc="Recebe pró-labore como sócio de empresa. Distribui lucros isentos. Incompatível com MEI."
                     active={formData.vinculos.includes("pj")}
+                    disabled={formData.vinculos.includes("mei")}
                     onClick={() => toggleVinculo("pj")}
                   />
                   <VinculoOption
@@ -170,6 +182,7 @@ export default function Simulator() {
                     title="MEI — Microempreendedor"
                     desc="Lucro presumido isento (32% serviços ou 8% comércio). DAS fixo mensal. Incompatível com PJ."
                     active={formData.vinculos.includes("mei")}
+                    disabled={formData.vinculos.includes("pj")}
                     onClick={() => toggleVinculo("mei")}
                   />
                 </div>
@@ -189,78 +202,188 @@ export default function Simulator() {
             {step === 1 && (
               <div className="animate-fade-in">
                 {/* CLT Section */}
-                <div className="mb-10">
-                  <div className="flex items-center gap-2 mb-6">
-                    <span className="text-lg">🏙️</span>
-                    <h4 className="text-xs font-bold text-violet uppercase tracking-widest">Sua renda como CLT</h4>
+                {formData.vinculos.includes("clt") && (
+                  <div className="mb-10 last:mb-0">
+                    <div className="flex items-center gap-2 mb-6">
+                      <span className="text-lg">🏙️</span>
+                      <h4 className="text-xs font-bold text-violet uppercase tracking-widest">Sua renda como CLT</h4>
+                    </div>
+                    
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-[13px] font-bold text-deep mb-3">Qual era o seu salário bruto mensal em 2025?</label>
+                        <div className="relative max-w-md">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
+                          <input
+                            type="number"
+                            value={formData.salarioMensal || ""}
+                            onChange={(e) => setFormData({...formData, salarioMensal: parseFloat(e.target.value) || 0})}
+                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
+                            placeholder="0,00"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col md:flex-row gap-6">
+                        <div className="flex-1">
+                          <label className="block text-[13px] font-bold text-deep mb-3">Meses trabalhados em 2025</label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="12"
+                            value={formData.mesesTrabalhados}
+                            onChange={(e) => setFormData({...formData, mesesTrabalhados: parseInt(e.target.value) || 0})}
+                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 px-4 font-bold text-deep transition-all"
+                          />
+                        </div>
+                        <div className="flex-2">
+                           {/* Empty space or additional fields */}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[13px] font-bold text-deep mb-3">Recebeu 13º salário em 2025?</label>
+                        <div className="space-y-2">
+                          <RadioOption 
+                            label="Sim — recebi o 13º completo"
+                            sub="Tributação exclusiva na fonte (Art. 700 RIR/2018). Não altera o IR do ajuste anual."
+                            active={formData.recebeu13 === "completo"}
+                            onClick={() => setFormData({...formData, recebeu13: "completo"})}
+                          />
+                          <RadioOption 
+                            label="Sim — proporcional (demissão ou admissão no ano)"
+                            sub="Tributação exclusiva na fonte. Informe o valor para fins de declaração."
+                            active={formData.recebeu13 === "proporcional"}
+                            onClick={() => setFormData({...formData, recebeu13: "proporcional"})}
+                          />
+                          <RadioOption 
+                            label="Não recebi 13º em 2025"
+                            active={formData.recebeu13 === "nao"}
+                            onClick={() => setFormData({...formData, recebeu13: "nao"})}
+                          />
+                        </div>
+                      </div>
+
+                      {formData.salarioMensal > 0 && <CLTMonthlyEstimate salario={formData.salarioMensal} />}
+                    </div>
                   </div>
-                  
-                  <div className="space-y-6">
+                )}
+
+                {/* Liberal Section */}
+                {formData.vinculos.includes("liberal") && (
+                  <div className="mb-10 pt-10 border-t border-gray-100 last:mb-0">
+                    <div className="flex items-center gap-2 mb-6">
+                      <span className="text-lg">🩺</span>
+                      <h4 className="text-xs font-bold text-violet uppercase tracking-widest">Sua renda como profissional liberal</h4>
+                    </div>
+                    
                     <div>
-                      <label className="block text-[13px] font-bold text-deep mb-3">Qual era o seu salário bruto mensal em 2025?</label>
+                      <label className="block text-[13px] font-bold text-deep mb-3">Total recebido em 2025 (Honorários/Autônomo)</label>
                       <div className="relative max-w-md">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
                         <input
                           type="number"
-                          value={formData.salarioMensal || ""}
-                          onChange={(e) => setFormData({...formData, salarioMensal: parseFloat(e.target.value) || 0})}
+                          value={formData.rendimentoLiberal || ""}
+                          onChange={(e) => setFormData({...formData, rendimentoLiberal: parseFloat(e.target.value) || 0})}
+                          className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
+                          placeholder="0,00"
+                        />
+                      </div>
+                      <p className="mt-3 text-[11px] text-gray-400">Some todos os honorários arrecadados no CPF. O INSS será calculado sobre esses valores.</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* PJ Section */}
+                {formData.vinculos.includes("pj") && (
+                  <div className="mb-10 pt-10 border-t border-gray-100 last:mb-0">
+                    <div className="flex items-center gap-2 mb-6">
+                      <span className="text-lg">🏢</span>
+                      <h4 className="text-xs font-bold text-violet uppercase tracking-widest">Sua renda como PJ (Sócio)</h4>
+                    </div>
+                    
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-[13px] font-bold text-deep mb-3">Total de Pró-labore recebido em 2025</label>
+                        <div className="relative max-w-md">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
+                          <input
+                            type="number"
+                            value={formData.proLaborePJ || ""}
+                            onChange={(e) => setFormData({...formData, proLaborePJ: parseFloat(e.target.value) || 0})}
+                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
+                            placeholder="0,00"
+                          />
+                        </div>
+                        <p className="mt-2 text-[11px] text-gray-400 uppercase tracking-tighter">Rendimento Tributável</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-[13px] font-bold text-deep mb-3">Total de Lucros/Dividendos distribuídos em 2025</label>
+                        <div className="relative max-w-md">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
+                          <input
+                            type="number"
+                            value={formData.lucrosPJ || ""}
+                            onChange={(e) => setFormData({...formData, lucrosPJ: parseFloat(e.target.value) || 0})}
+                            className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
+                            placeholder="0,00"
+                          />
+                        </div>
+                        <p className="mt-2 text-[11px] text-gray-400 uppercase tracking-tighter">Rendimento Isento</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* MEI Section */}
+                {formData.vinculos.includes("mei") && (
+                  <div className="mb-10 pt-10 border-t border-gray-100 last:mb-0">
+                    <div className="flex items-center gap-2 mb-6">
+                      <span className="text-lg">🌕</span>
+                      <h4 className="text-xs font-bold text-violet uppercase tracking-widest">Sua renda como MEI</h4>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-[13px] font-bold text-deep mb-3">Rendimento líquido (Isento) do MEI em 2025</label>
+                      <div className="relative max-w-md">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
+                        <input
+                          type="number"
+                          value={formData.rendimentoMEI || ""}
+                          onChange={(e) => setFormData({...formData, rendimentoMEI: parseFloat(e.target.value) || 0})}
+                          className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
+                          placeholder="0,00"
+                        />
+                      </div>
+                      <p className="mt-3 text-[11px] text-gray-400">Lucro distribuído após descontar as despesas e a parcela tributável.</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Aposentado Section */}
+                {formData.vinculos.includes("apo") && (
+                  <div className="mb-10 pt-10 border-t border-gray-100 last:mb-0">
+                    <div className="flex items-center gap-2 mb-6">
+                      <span className="text-lg">🏅</span>
+                      <h4 className="text-xs font-bold text-violet uppercase tracking-widest">Sua renda como Aposentado/Pensionista</h4>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-[13px] font-bold text-deep mb-3">Total bruto recebido em 2025</label>
+                      <div className="relative max-w-md">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
+                        <input
+                          type="number"
+                          value={formData.rendimentoAposentado || ""}
+                          onChange={(e) => setFormData({...formData, rendimentoAposentado: parseFloat(e.target.value) || 0})}
                           className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
                           placeholder="0,00"
                         />
                       </div>
                     </div>
-
-                    <div>
-                      <label className="block text-[13px] font-bold text-deep mb-3">Recebeu 13º salário em 2025?</label>
-                      <div className="space-y-2">
-                        <RadioOption 
-                          label="Sim — recebi o 13º completo"
-                          sub="Tributação exclusiva na fonte (Art. 700 RIR/2018). Não altera o IR do ajuste anual."
-                          active={formData.recebeu13 === "completo"}
-                          onClick={() => setFormData({...formData, recebeu13: "completo"})}
-                        />
-                        <RadioOption 
-                          label="Sim — proporcional (demissão ou admissão no ano)"
-                          sub="Tributação exclusiva na fonte. Informe o valor para fins de declaração."
-                          active={formData.recebeu13 === "proporcional"}
-                          onClick={() => setFormData({...formData, recebeu13: "proporcional"})}
-                        />
-                        <RadioOption 
-                          label="Não recebi 13º em 2025"
-                          active={formData.recebeu13 === "nao"}
-                          onClick={() => setFormData({...formData, recebeu13: "nao"})}
-                        />
-                      </div>
-                    </div>
-
-                    {formData.salarioMensal > 0 && (
-                      <CLTMonthlyEstimate salario={formData.salarioMensal} />
-                    )}
                   </div>
-                </div>
-
-                {/* Liberal Section */}
-                <div className="pt-8 border-t border-gray-100">
-                  <div className="flex items-center gap-2 mb-6">
-                    <span className="text-lg">🩺</span>
-                    <h4 className="text-xs font-bold text-violet uppercase tracking-widest">Sua renda como profissional liberal / autônomo</h4>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-[13px] font-bold text-deep mb-3">Total recebido como autônomo ou profissional liberal em 2025</label>
-                    <div className="relative max-w-md">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
-                      <input
-                        type="number"
-                        value={formData.rendimentoLiberal || ""}
-                        onChange={(e) => setFormData({...formData, rendimentoLiberal: parseFloat(e.target.value) || 0})}
-                        className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
-                        placeholder="0,00"
-                      />
-                    </div>
-                    <p className="mt-3 text-[11px] text-gray-400">Some todos os honorários, RPA e notas fiscais emitidas no CPF. O INSS será calculado como contribuinte individual (20%).</p>
-                  </div>
-                </div>
+                )}
 
                 <div className="flex justify-between items-center pt-10 mt-10 border-t border-gray-100">
                   <button onClick={prev} className="text-gray-500 font-bold hover:text-deep transition-colors">← Voltar</button>
@@ -293,18 +416,18 @@ export default function Simulator() {
                   </div>
 
                   <div>
-                    <label className="block text-[13px] font-bold text-deep mb-3">Recebeu rendimentos isentos ou tributados na fonte em 2025?</label>
+                    <label className="block text-[13px] font-bold text-deep mb-3">Recebeu outros rendimentos isentos ou tributados na fonte em 2025?</label>
                     <div className="relative max-w-md">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold">R$</span>
                       <input
                         type="number"
-                        value={formData.rendimentoIsento || ""}
-                        onChange={(e) => setFormData({...formData, rendimentoIsento: parseFloat(e.target.value) || 0})}
+                        value={formData.rendimentoOutros || ""}
+                        onChange={(e) => setFormData({...formData, rendimentoOutros: parseFloat(e.target.value) || 0})}
                         className="w-full bg-bg border-2 border-transparent focus:border-violet outline-none rounded-xl py-3 pl-12 pr-4 font-bold text-deep transition-all"
                         placeholder="0,00"
                       />
                     </div>
-                    <p className="mt-2 text-[11px] text-gray-400 italic">Ex.: PLR, FGTS sacado, poupança, LCI/LCA, dividendos, heranças, indenizações, distribuição de lucros da PJ. O 13º salário já é informado no bloco CLT.</p>
+                    <p className="mt-2 text-[11px] text-gray-400 italic">Ex.: PLR, FGTS sacado, poupança, LCI/LCA, dividendos, heranças, indenizações. Rendas de PJ/MEI já informadas anteriormente não precisam ser repetidas aqui.</p>
                   </div>
 
                   <div>
@@ -556,36 +679,40 @@ function VinculoOption({
   title,
   desc,
   active,
+  disabled,
   onClick,
 }: {
   icon: string;
   title: string;
   desc: string;
   active: boolean;
+  disabled?: boolean;
   onClick: () => void;
 }) {
   return (
     <div
-      onClick={onClick}
-      className={`relative p-6 rounded-2xl cursor-pointer transition-all duration-300 border-2 select-none group min-h-[140px] ${
-        active 
-          ? "bg-[#F4F2FF] border-violet shadow-lg shadow-violet/10" 
-          : "bg-white border-gray-100 hover:border-soft"
+      onClick={!disabled ? onClick : undefined}
+      className={`relative p-6 rounded-2xl transition-all duration-300 border-2 select-none group min-h-[140px] ${
+        disabled
+          ? "bg-white/50 border-gray-100 opacity-40 cursor-not-allowed filter grayscale"
+          : active
+          ? "bg-[#F4F2FF] border-violet shadow-lg shadow-violet/10 cursor-pointer"
+          : "bg-white border-gray-100 hover:border-soft cursor-pointer"
       }`}
     >
       <div 
         className={`absolute top-4 right-4 w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
-          active ? "bg-violet border-violet text-white" : "bg-white border-gray-300"
+          disabled ? "bg-gray-100 border-gray-200" : active ? "bg-violet border-violet text-white" : "bg-white border-gray-300"
         }`}
       >
-        {active && <span className="text-[10px] font-bold">✓</span>}
+        {active && !disabled && <span className="text-[10px] font-bold">✓</span>}
       </div>
       
       <div className="flex flex-col gap-3">
-        <div className="text-3xl filter group-hover:scale-110 transition-transform">{icon}</div>
+        <div className={`text-3xl transition-transform ${!disabled && "group-hover:scale-110"}`}>{icon}</div>
         <div>
-          <h4 className="font-extrabold text-deep text-[15px] mb-1">{title}</h4>
-          <p className="text-sub text-[12px] leading-snug">{desc}</p>
+          <h4 className={`font-extrabold text-[15px] mb-1 ${disabled ? "text-gray-400" : "text-deep"}`}>{title}</h4>
+          <p className={`text-[12px] leading-snug ${disabled ? "text-gray-300" : "text-sub"}`}>{desc}</p>
         </div>
       </div>
     </div>
@@ -603,18 +730,26 @@ function Result({ data, reset }: { data: FormData; reset: () => void }) {
     mesesTrabalhados: data.mesesTrabalhados,
     recebeu13: data.recebeu13,
     rendimentoLiberal: data.rendimentoLiberal,
+    proLaborePJ: data.proLaborePJ,
+    lucrosPJ: data.lucrosPJ,
+    rendimentoMEI: data.rendimentoMEI,
+    rendimentoAposentado: data.rendimentoAposentado,
     dependentes: data.dependentes,
     gastosSaude: data.gastosSaude,
     gastosEducacao: data.gastosEducacao,
     tipoCalculo: data.tipoCalculo,
   });
 
+  const totalIsentos = calc.totalIsentos + data.rendimentoOutros;
+  const totalRendimentos = calc.totalRendimentos + totalIsentos;
+
   const isObrigadoRenda = calc.totalRendimentos > IRPF_RULES.ANNUAL_EXEMPTION_LIMIT;
+  const isObrigadoIsentos = totalIsentos > 50000; // Simplified criteria for isentos (example)
   const isObrigadoPatrimonio = data.patrimonio > IRPF_RULES.ANNUAL_ASSETS_LIMIT;
   const isObrigadoExterior = data.situacoes.includes("exterior");
   const isObrigadoBolsa = data.operouBolsa === "sim";
   
-  const isObrigado = isObrigadoRenda || isObrigadoPatrimonio || isObrigadoExterior || isObrigadoBolsa;
+  const isObrigado = isObrigadoRenda || isObrigadoPatrimonio || isObrigadoExterior || isObrigadoBolsa || isObrigadoIsentos;
 
   const handleSendLead = async () => {
     if (!email || !phone) return;
@@ -628,6 +763,7 @@ function Result({ data, reset }: { data: FormData; reset: () => void }) {
         patrimonio: data.patrimonio,
         vinculos: data.vinculos.join(","),
         situacoes: data.situacoes.join(","),
+        isento: totalIsentos,
       });
 
       setSent(true);
@@ -680,6 +816,10 @@ function Result({ data, reset }: { data: FormData; reset: () => void }) {
           <div className="flex justify-between p-4 bg-white/5 rounded-xl">
             <span className="text-white/60 text-sm">Modelo Sugerido</span>
             <span className="font-bold text-sm uppercase tracking-wider text-green-400">{calc.modeloMaisVantajoso}</span>
+          </div>
+          <div className="flex justify-between p-4 bg-white/5 rounded-xl">
+            <span className="text-white/60 text-sm">Rendimentos Isentos</span>
+            <span className="font-bold text-base">{formatBRL(totalIsentos)}</span>
           </div>
           <div className="flex justify-between p-4 bg-white/5 rounded-xl">
             <span className="text-white/60 text-sm">Patrimônio Declarado</span>

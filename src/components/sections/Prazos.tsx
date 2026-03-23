@@ -10,7 +10,7 @@ export default function Prazos() {
   }>({ days: "--", hours: "--", mins: "--" });
 
   useEffect(() => {
-    const targetDate = new Date("2026-05-29T23:59:59").getTime();
+    const targetDate = new Date("2026-05-29T23:59:59-03:00").getTime();
 
     const timer = setInterval(() => {
       const now = new Date().getTime();

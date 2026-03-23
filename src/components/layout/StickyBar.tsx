@@ -21,7 +21,7 @@ export default function StickyBar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     
     // Countdown logic
-    const deadline = new Date("2026-05-30T23:59:59-03:00").getTime();
+    const deadline = new Date("2026-05-29T23:59:59-03:00").getTime();
     
     const tick = () => {
       const diff = deadline - Date.now();

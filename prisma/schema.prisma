@@ -15,6 +15,7 @@ model Lead {
   patrimonio      Decimal? @db.Decimal
   vinculos        String?
   situacoes       String?
+  isento          Decimal? @db.Decimal
   origem          String?
 
   @@map("leads_irpf")

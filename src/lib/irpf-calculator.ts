@@ -60,21 +60,33 @@ export function calculateAnnual2026(params: {
   mesesTrabalhados: number;
   recebeu13: "completo" | "proporcional" | "nao";
   rendimentoLiberal: number;
+  proLaborePJ: number;
+  lucrosPJ: number;
+  rendimentoMEI: number;
+  rendimentoAposentado: number;
   dependentes: number;
   gastosSaude: number;
   gastosEducacao: number;
   tipoCalculo: "simplificado" | "completo" | "automatico";
 }) {
   const rendimentoCLT = params.salarioMensal * params.mesesTrabalhados;
-  const rendimentoLiberal = params.rendimentoLiberal;
-  const totalRendimentosTributaveis = rendimentoCLT + rendimentoLiberal;
+  const totalRendimentosTributaveis = 
+    rendimentoCLT + 
+    params.rendimentoLiberal + 
+    params.proLaborePJ + 
+    params.rendimentoAposentado;
+
+  const totalRendimentosIsentos = params.lucrosPJ + params.rendimentoMEI;
   
   // INSS Estimation
   // CLT: Approximate 11% (Simplified)
   const inssCLT = rendimentoCLT * 0.11; 
   // Liberal: 20% on monthly base up to ceiling
-  const inssLiberal = Math.min(rendimentoLiberal, IRPF_RULES.INSS_MAX_BASE * 12) * 0.2;
-  const totalINSS = inssCLT + inssLiberal;
+  const inssLiberal = Math.min(params.rendimentoLiberal, IRPF_RULES.INSS_MAX_BASE * 12) * 0.2;
+  // PJ: Approximate 11% on Pro-labore
+  const inssPJ = params.proLaborePJ * 0.11;
+  
+  const totalINSS = inssCLT + inssLiberal + inssPJ;
 
   // 1. Simplified Model
   const descontoSimplificado = Math.min(
@@ -106,6 +118,7 @@ export function calculateAnnual2026(params: {
 
   return {
     totalRendimentos: totalRendimentosTributaveis,
+    totalIsentos: totalRendimentosIsentos,
     baseCalculo: finalBase,
     impostoDevido: finalImposto,
     aliquotaEfetiva: totalRendimentosTributaveis > 0 ? (finalImposto / totalRendimentosTributaveis) * 100 : 0,
